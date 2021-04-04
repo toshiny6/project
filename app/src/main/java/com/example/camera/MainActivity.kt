@@ -1,6 +1,5 @@
 package com.example.camera
 
-import android.R.attr
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
@@ -144,6 +143,7 @@ class MainActivity : AppCompatActivity() {
                 binding.ivPicture.setImageBitmap(bitmap)
             }
             savePhoto(bitmap)
+
         }
         else if(requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK)
         {
@@ -152,19 +152,28 @@ class MainActivity : AppCompatActivity() {
 
             bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
-
+            Toast.makeText(this,getPathFromUri(uri),Toast.LENGTH_SHORT).show()  // 저장 경로 확인
             binding.ivPicture.setImageBitmap(bitmap);
         }
 
     }
 
+    // Uri - > filepath 구하기
+    fun getPathFromUri(uri: Uri?): String? {
+        val cursor =
+            uri?.let { contentResolver.query(it, null, null, null, null) }
+        cursor!!.moveToNext()
+        val path = cursor.getString(cursor.getColumnIndex("_data"))
+        cursor.close()
+        return path
+    }
     /**
      *  갤러리에 저장
      */
     private fun savePhoto(bitmap: Bitmap) {
         val absolutePath = "/storage/emulated/0/"
         val folderPath = "$absolutePath/Pictures/"
-        //val folderPath = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/" // 사진 폴터로 저장하기 위한 경로 선언
+        //val folderPath = Environment.getExternalStorageDirectory().absolutePath + "/Pictures/" // 사진 폴더로 저장하기 위한 경로 선언
         val timestamp =  SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val fileName = "${timestamp}.jpeg"
         val folder = File(folderPath)
@@ -175,7 +184,9 @@ class MainActivity : AppCompatActivity() {
         // 실제적인 저장 처리
         val out =  FileOutputStream(folderPath + fileName)
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
-        Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
+       // Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
+        Toast.makeText(this , folderPath+ fileName, Toast.LENGTH_SHORT).show()
+        // 저장 경로 확인
 
     }
 
