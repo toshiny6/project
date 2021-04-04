@@ -1,16 +1,17 @@
 package com.example.camera
 
+import android.R.attr
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.camera.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
@@ -18,13 +19,14 @@ import com.gun0912.tedpermission.TedPermission
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
     val REQUEST_IMAGE_CAPTURE = 1 // 카메라 사진 촬영 요청 코드
+    val REQUEST_GALLERY_IMAGE = 2 // 갤러리 이미지 불러오기
     lateinit var curPhotoPath : String //문자열 형태의 사진 경로 값
     private var mBinding : ActivityMainBinding? = null
     private val binding get () = mBinding!!
@@ -42,6 +44,11 @@ class MainActivity : AppCompatActivity() {
         binding.btnCamera.setOnClickListener {
             takeCapture() // 기본 카메라 앱을 실행하여 사진 촬영
         }
+        binding.btnGallery.setOnClickListener {
+             // 사진 불러오는 함수 실행
+            goToAlbum()
+        }
+
     }
 
     /**
@@ -106,6 +113,16 @@ class MainActivity : AppCompatActivity() {
             .check()
     }
 
+    /***
+     *  갤러리 이미지 불러오기
+     */
+
+    private  fun goToAlbum() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = MediaStore.Images.Media.CONTENT_TYPE
+        startActivityForResult(intent, REQUEST_GALLERY_IMAGE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         //startActivityForResult를 통해서 기본 카메라 앱으로부터 받아온 사진 결과 값
         super.onActivityResult(requestCode, resultCode, data)
@@ -128,6 +145,17 @@ class MainActivity : AppCompatActivity() {
             }
             savePhoto(bitmap)
         }
+        else if(requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK)
+        {
+            val uri: Uri? = data?.getData()
+            val bitmap : Bitmap
+
+              bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                // Log.d(TAG, String.valueOf(bitmap));
+
+                binding.ivPicture.setImageBitmap(bitmap);
+        }
+
     }
 
     /**
