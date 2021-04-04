@@ -1,6 +1,7 @@
 package com.example.camera
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private var mBinding : ActivityMainBinding? = null
     private val binding get () = mBinding!!
 
-
+    lateinit var filepath : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +47,19 @@ class MainActivity : AppCompatActivity() {
         binding.btnGallery.setOnClickListener {
              // 사진 불러오는 함수 실행
             goToAlbum()
+        }
+        binding.btnConvert.setOnClickListener {
+            // 결과 액티비티 실행
+            if(this::filepath.isInitialized)
+            {
+                val nextIntent = Intent(this, ResultActivity::class.java)
+                nextIntent.putExtra("filepath", filepath)
+                startActivity(nextIntent)
+            }
+            else
+            {
+                Toast.makeText(this, "이미지를 선택해주세요.",Toast.LENGTH_SHORT).show()
+            }
         }
 
     }
@@ -158,18 +172,22 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // Uri - > filepath 구하기
+    // 갤러리에 저장된 사진 불러올 때 Uri - > filepath 구하기
     fun getPathFromUri(uri: Uri?): String? {
         val cursor =
             uri?.let { contentResolver.query(it, null, null, null, null) }
         cursor!!.moveToNext()
         val path = cursor.getString(cursor.getColumnIndex("_data"))
         cursor.close()
+        filepath=path
         return path
     }
+
     /**
      *  갤러리에 저장
      */
+
+
     private fun savePhoto(bitmap: Bitmap) {
         val absolutePath = "/storage/emulated/0/"
         val folderPath = "$absolutePath/Pictures/"
@@ -186,6 +204,7 @@ class MainActivity : AppCompatActivity() {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
        // Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
         Toast.makeText(this , folderPath+ fileName, Toast.LENGTH_SHORT).show()
+        filepath=folderPath+fileName
         // 저장 경로 확인
 
     }
