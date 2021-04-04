@@ -150,10 +150,10 @@ class MainActivity : AppCompatActivity() {
             val uri: Uri? = data?.getData()
             val bitmap : Bitmap
 
-              bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
 
-                binding.ivPicture.setImageBitmap(bitmap);
+            binding.ivPicture.setImageBitmap(bitmap);
         }
 
     }

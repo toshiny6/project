@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F8F8F8"
     tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btn_gallery"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="12dp"
+        android:background="#FFFFFF"
+        app:backgroundTint="#040404"
+        app:icon="@android:drawable/ic_menu_gallery"
+        app:layout_constraintBottom_toTopOf="@+id/btn_camera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_camera"
@@ -21,10 +34,10 @@
         android:id="@+id/iv_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher_background"
         app:layout_constraintBottom_toTopOf="@+id/btn_camera"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.488"
-        android:src="@drawable/ic_launcher_background" />
+        app:layout_constraintVertical_bias="0.488" />
 </androidx.constraintlayout.widget.ConstraintLayout>
