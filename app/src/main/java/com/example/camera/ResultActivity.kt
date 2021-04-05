@@ -17,14 +17,12 @@ class ResultActivity : AppCompatActivity() {
         mBinding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (intent.hasExtra("filepath"))
-        {
+        if (intent.hasExtra("filepath")) {
             //Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
             var bm : Bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath") );
             binding.ivInput.setImageBitmap(bm);
         }
-        else
-        {
+        else {
             Toast.makeText(this, "Error!", Toast.LENGTH_SHORT).show()
         }
 

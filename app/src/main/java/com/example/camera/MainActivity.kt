@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -50,18 +51,21 @@ class MainActivity : AppCompatActivity() {
         }
         binding.btnConvert.setOnClickListener {
             // 결과 액티비티 실행
-            if(this::filepath.isInitialized)
-            {
+            if(this::filepath.isInitialized) {
                 val nextIntent = Intent(this, ResultActivity::class.java)
                 nextIntent.putExtra("filepath", filepath)
+
+                // model 사용하는 process 실행
+                // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
+                var bm : Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath") );
+                UseModel(bm,this).process()
+
                 startActivity(nextIntent)
             }
-            else
-            {
+            else {
                 Toast.makeText(this, "이미지를 선택해주세요.",Toast.LENGTH_SHORT).show()
             }
         }
-
     }
 
     /**
@@ -108,14 +112,10 @@ class MainActivity : AppCompatActivity() {
         val permission = object : PermissionListener{
             override fun onPermissionGranted() { // 설정해놓은 위험 권한들이 허용 되었을 경우 수행
                 Toast.makeText(this@MainActivity, "권한이 허용 되었습니다.",Toast.LENGTH_SHORT).show()
-
             }
-
             override fun onPermissionDenied(deniedPermissions: MutableList<String>?) { // 설정해놓은 위험 권한이 거부 되었을 경우 수행
                 Toast.makeText(this@MainActivity, "권한이 거부 되었습니다.",Toast.LENGTH_SHORT).show()
-
             }
-
         }
 
         TedPermission.with(this)
