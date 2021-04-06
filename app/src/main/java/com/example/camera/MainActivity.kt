@@ -58,7 +58,8 @@ class MainActivity : AppCompatActivity() {
                 // model 사용하는 process 실행
                 // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
                 var bm : Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath") );
-                UseModel(bm,this).process()
+                bm = Bitmap.createScaledBitmap(bm,512,512,true)
+                //UseModel(bm,this).process()
 
                 startActivity(nextIntent)
             }
