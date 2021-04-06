@@ -60,7 +60,7 @@ class UseModel (bitmap : Bitmap, context : Context){
      */
     private fun loadModel(context: Context ){
         try{
-            module = Module.load(assetFilePath(context, "Epoch99_3.pt"))
+            module = Module.load(assetFilePath(context, "Epoch99_3.pth"))
             Log.d("Model", "Model Loaded Successfully")
         } catch (e: IOException){
             Log.e("UseModel", "Load Model Failed", e)
