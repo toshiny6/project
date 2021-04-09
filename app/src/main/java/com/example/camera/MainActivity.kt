@@ -11,18 +11,20 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.example.camera.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import org.pytorch.Module
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,25 +48,24 @@ class MainActivity : AppCompatActivity() {
             takeCapture() // 기본 카메라 앱을 실행하여 사진 촬영
         }
         binding.btnGallery.setOnClickListener {
-             // 사진 불러오는 함수 실행
+            // 사진 불러오는 함수 실행
             goToAlbum()
         }
         binding.btnConvert.setOnClickListener {
             // 결과 액티비티 실행
-            if(this::filepath.isInitialized) {
+            if (this::filepath.isInitialized) {
                 val nextIntent = Intent(this, ResultActivity::class.java)
                 nextIntent.putExtra("filepath", filepath)
 
                 // model 사용하는 process 실행
                 // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
-                var bm : Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath") );
-                bm = Bitmap.createScaledBitmap(bm,512,512,true)
-                //UseModel(bm,this).process()
+                var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
+                bm = Bitmap.createScaledBitmap(bm, 512, 512, true)
+                UseModel(bm, applicationContext).process()
 
                 startActivity(nextIntent)
-            }
-            else {
-                Toast.makeText(this, "이미지를 선택해주세요.",Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "이미지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -130,7 +131,6 @@ class MainActivity : AppCompatActivity() {
     /***
      *  갤러리 이미지 불러오기
      */
-
     private  fun goToAlbum() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = MediaStore.Images.Media.CONTENT_TYPE
@@ -162,13 +162,13 @@ class MainActivity : AppCompatActivity() {
         }
         else if(requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK)
         {
-            val uri: Uri? = data?.getData()
+            val uri: Uri? = data?.data
             val bitmap : Bitmap
 
-            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                // Log.d(TAG, String.valueOf(bitmap));
+            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            // Log.d(TAG, String.valueOf(bitmap));
             Toast.makeText(this,getPathFromUri(uri),Toast.LENGTH_SHORT).show()  // 저장 경로 확인
-            binding.ivPicture.setImageBitmap(bitmap);
+            binding.ivPicture.setImageBitmap(bitmap)
         }
 
     }
@@ -187,8 +187,6 @@ class MainActivity : AppCompatActivity() {
     /**
      *  갤러리에 저장
      */
-
-
     private fun savePhoto(bitmap: Bitmap) {
         val absolutePath = "/storage/emulated/0/"
         val folderPath = "$absolutePath/Pictures/"
@@ -210,8 +208,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy()
-    {
+    override fun onDestroy() {
         mBinding = null
         super.onDestroy()
     }

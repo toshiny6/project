@@ -16,7 +16,7 @@ class UseModel (bitmap : Bitmap, context : Context){
 
     private var bitmap: Bitmap? = null;
     private var context: Context? = null;
-    private var module: Module? = null;
+    private var mModule: Module? = null;
 
     /**
      * constructor
@@ -36,22 +36,21 @@ class UseModel (bitmap : Bitmap, context : Context){
         // 모델 불러오기
         context?.let { loadModel(it) }
 
-        /*
         // inputTensor 생성
         var inputTensor: Tensor = TensorImageUtils.bitmapToFloat32Tensor(
             bitmap,
             TensorImageUtils.TORCHVISION_NORM_MEAN_RGB,
             TensorImageUtils.TORCHVISION_NORM_STD_RGB)
+        Log.d("Tensor", "inPutTensor : " + inputTensor.dataAsFloatArray)
 
         // outputTensor 생성 및 forward
-        var outputTensor: Tensor = module!!.forward(IValue.from(inputTensor)).toTensor()
-        Log.d("Tensor", outputTensor.toString())
+        var tmp:String=""
+        var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
+
+        Log.d("Tensor", "outPutTensor : " + outputTensor.size)
 
         // output 결과로  result_image 생성, 반환
-
-         */
     }
-
 
     /**
      * model load
@@ -60,7 +59,7 @@ class UseModel (bitmap : Bitmap, context : Context){
      */
     private fun loadModel(context: Context ){
         try{
-            module = Module.load(assetFilePath(context, "Epoch99_3.pth"))
+            mModule = Module.load(assetFilePath(context, "lowlight_model1.pt"))
             Log.d("Model", "Model Loaded Successfully")
         } catch (e: IOException){
             Log.e("UseModel", "Load Model Failed", e)
