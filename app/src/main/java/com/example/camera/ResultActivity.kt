@@ -22,13 +22,14 @@ class ResultActivity : AppCompatActivity() {
 
         if (intent.hasExtra("filepath")) {
             //Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
-            var bm : Bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath") );
+            var bm : Bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath") )
             // resize 전 이미지
             // binding.ivInput.setImageBitmap(bm)
             // 원본 이미지 리사이즈 , 저장
             bm = Bitmap.createScaledBitmap(bm,512,512,true)
             savePhoto(bm)
             binding.ivInput.setImageBitmap(bm)
+            //binding.ivOutput.setImageBitmap()
         }
         else {
             Toast.makeText(this, "Error!", Toast.LENGTH_SHORT).show()
@@ -57,6 +58,4 @@ class ResultActivity : AppCompatActivity() {
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
         // Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
     }
-
-
 }

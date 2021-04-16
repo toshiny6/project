@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var curPhotoPath : String //문자열 형태의 사진 경로 값
     private var mBinding : ActivityMainBinding? = null
     private val binding get () = mBinding!!
+    private var mModule: Module? = null
 
     lateinit var filepath : String
 
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setPermission() // 권한을 체크하는 테스트 수행
+        loadModel() // model load
 
         binding.btnCamera.setOnClickListener {
             takeCapture() // 기본 카메라 앱을 실행하여 사진 촬영
@@ -57,16 +59,57 @@ class MainActivity : AppCompatActivity() {
                 val nextIntent = Intent(this, ResultActivity::class.java)
                 nextIntent.putExtra("filepath", filepath)
 
-                // model 사용하는 process 실행
                 // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
                 var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
                 bm = Bitmap.createScaledBitmap(bm, 512, 512, true)
-                UseModel(bm, applicationContext).process()
 
+                // model 사용하는 process 실행
+                val begin = System.nanoTime()
+                val outPutImage = UseModel(bm, this!!.mModule!!).process()
+                val end = System.nanoTime()
+                Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
+
+                // 결과 사진 저장 & 결과 화면 전송
+                savePhoto(outPutImage)
+                //nextIntent.putExtra("output",outPutImage)
                 startActivity(nextIntent)
             } else {
                 Toast.makeText(this, "이미지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    /**
+     * model load
+     */
+    private fun loadModel(){
+        try{
+            mModule = Module.load(assetFilePath(this, "lowlight_model1.pt"))
+            Log.d("Model", "Model Loaded Successfully")
+        } catch (e: IOException){
+            Log.e("UseModel", "Load Model Failed", e)
+        }
+    }
+
+    /**
+     * return : model의 절대경로
+     */
+    @Throws(IOException::class)
+    fun assetFilePath(context: Context, assetName: String?): String? {
+        val file = File(context.filesDir, assetName!!)
+        if (file.exists() && file.length() > 0) {
+            return file.absolutePath
+        }
+        context.assets.open(assetName).use { `is` ->
+            FileOutputStream(file).use { os ->
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (`is`.read(buffer).also { read = it } != -1) {
+                    os.write(buffer, 0, read)
+                }
+                os.flush()
+            }
+            return file.absolutePath
         }
     }
 
