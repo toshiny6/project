@@ -49,6 +49,7 @@ class UseModel (bitmap : Bitmap, module: Module){
         val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
 
         // bitmap으로 만들어서 반환
+
         return floatArrayToBitmap(dataAsFloatArray, width, height)
     }
 

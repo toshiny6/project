@@ -1,30 +1,43 @@
 package com.example.camera
 
 import android.app.Activity
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.renderscript.Allocation
+import android.renderscript.Element
+import android.renderscript.RenderScript
+import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.bumptech.glide.Glide
 import com.example.camera.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import org.pytorch.IValue
 import org.pytorch.Module
+import org.pytorch.Tensor
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private var mModule: Module? = null
 
     lateinit var filepath : String
-
+    lateinit var _bm : Bitmap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
@@ -56,27 +69,183 @@ class MainActivity : AppCompatActivity() {
         binding.btnConvert.setOnClickListener {
             // 결과 액티비티 실행
             if (this::filepath.isInitialized) {
+
+                binding.progressBar.visibility=View.VISIBLE
+
                 val nextIntent = Intent(this, ResultActivity::class.java)
                 nextIntent.putExtra("filepath", filepath)
 
                 // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
                 var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
-                bm = Bitmap.createScaledBitmap(bm, 512, 512, true)
+
+                // 블러, 리사이즈
+                var blurRadius : Int = 5 //.toFloat()
+                bm=blur(getApplicationContext(),bm,blurRadius)
+                bm = Bitmap.createScaledBitmap(bm, 480 , 640, true)
+
+                //savePhoto(bm)
+
+                //블러,리사이즈 처리된 input image uri
+                nextIntent.putExtra("uri", getImageUri(getApplicationContext(),bm).toString())
+
 
                 // model 사용하는 process 실행
-                val begin = System.nanoTime()
-                val outPutImage = UseModel(bm, this!!.mModule!!).process()
-                val end = System.nanoTime()
-                Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
+               // val outPutImage = UseModel(bm, this!!.mModule!!).process()
+
+                val thread = Thread(
+                    Runnable {
+                        val begin = System.nanoTime()
+                        try{
+
+                        var x: Int = 0
+                        var y: Int = 0
+                        var width: Int = bm.width
+                        var height: Int = bm.height
+
+
+                        val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
+                        if (bm != null) {
+                            val pixelsCount = height * width
+                            val pixels = IntArray(pixelsCount)
+                            var outBufferOffset = 0
+                            bm!!.getPixels(pixels, 0, width, x, y, width, height)
+                            val offset_b = 2 * pixelsCount
+                            for (i in 0 until pixelsCount) {
+                                val c = pixels[i]
+                                val r = (c shr 16 and 0xff) / 255.0f
+                                val g = (c shr 8 and 0xff) / 255.0f
+                                val b = (c and 0xff) / 255.0f
+                                floatBuffer.put(outBufferOffset + i, r)
+                                floatBuffer.put(outBufferOffset + pixelsCount + i, g)
+                                floatBuffer.put(outBufferOffset + offset_b + i, b)
+                            }
+                        }
+                        var inputTensor: Tensor = Tensor.fromBlob(
+                            floatBuffer,
+                            longArrayOf(1, 3, height.toLong(), width.toLong())
+                        )
+
+
+                        // outputTensor 생성 및 forward
+                        var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
+
+                        val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
+
+                        // bitmap으로 만들어서 반환
+
+
+                        // Create empty bitmap in ARGB format
+                        val bmp: Bitmap =
+                            width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                        val _pixels: IntArray = IntArray(width * height!! * 4)
+
+                        // mapping smallest value to 0 and largest value to 255
+                        val maxValue = dataAsFloatArray.max() ?: 1.0f
+                        val minValue = dataAsFloatArray.min() ?: -1.0f
+                        val delta = maxValue - minValue
+
+                        // Define if float min..max will be mapped to 0..255 or 255..0
+                        val conversion =
+                            { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
+
+                        // copy each value from float array to RGB channels
+                        if (width != null) {
+                            for (i in 0 until width * height) {
+                                val r = conversion(dataAsFloatArray[i])
+                                val g = conversion(dataAsFloatArray[i + width * height])
+                                val b = conversion(dataAsFloatArray[i + 2 * width * height])
+                                _pixels[i] =
+                                    Color.rgb(r, g, b) // you might need to import for rgb()
+                            }
+                        }
+                        if (width != null) {
+                            bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
+                        }
+
+                            nextIntent.putExtra("resulturi", getImageUri(getApplicationContext(),bmp).toString())
+                             runOnUiThread{
+                                 binding.progressBar.visibility=View.INVISIBLE
+                           }
+                            val end = System.nanoTime()
+                            Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
+                    }catch(e:Exception)
+                       {
+                           e.printStackTrace()
+                       }
+                    }
+                )
+
+                thread.run()
 
                 // 결과 사진 저장 & 결과 화면 전송
-                savePhoto(outPutImage)
+                //savePhoto(outPutImage)
                 //nextIntent.putExtra("output",outPutImage)
+
+                //여기
+                //nextIntent.putExtra("resulturi", getImageUri(getApplicationContext(),outPutImage).toString())
                 startActivity(nextIntent)
             } else {
                 Toast.makeText(this, "이미지를 선택해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+
+    fun blur(context : Context, sentBitmap : Bitmap, radius : Int) : Bitmap{
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+            var bitmap : Bitmap = sentBitmap.copy(sentBitmap.getConfig(), true)
+
+            val rs : RenderScript = RenderScript.create(context)
+            val input : Allocation = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
+                Allocation.USAGE_SCRIPT)
+            val output : Allocation = Allocation.createTyped(rs, input.getType())
+            val script : ScriptIntrinsicBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
+            script.setRadius(radius.toFloat()) //0.0f ~ 25.0f
+            script.setInput(input)
+            script.forEach(output)
+            output.copyTo(bitmap)
+            return bitmap
+        }
+        else
+            return sentBitmap
+
+    }
+
+    // 절대경로 -> uri
+    fun getUriFromPath(filePath: String): Uri? {
+        val cursor: Cursor? = contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            null, "_data = '$filePath'", null, null
+        )
+        if (cursor != null) {
+            cursor.moveToNext()
+        }
+        val id: Int? = cursor?.getInt(cursor?.getColumnIndex("_id"))
+
+        return id?.toLong()?.let {
+            ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                it
+            )
+        }
+
+
+    }
+
+    //bitmap -> uri
+    private fun getImageUri(
+        context: Context,
+        inImage: Bitmap
+    ): Uri? {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(
+            context.contentResolver,
+            inImage,
+            "Title",
+            null
+        )
+        return Uri.parse(path)
     }
 
     /**
@@ -191,14 +360,21 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT < 28) {
                 //안드로이드 9.0보다 낮은 경우
                 bitmap = MediaStore.Images.Media.getBitmap(contentResolver, Uri.fromFile(file))
-                binding.ivPicture.setImageBitmap(bitmap) // 이미지 뷰에 촬영한 사진 기록
+
+                Glide.with(getApplicationContext())
+                    .load(Uri.fromFile(file))
+                    .into(binding.ivPicture)
+                //binding.ivPicture.setImageBitmap(bitmap) // 이미지 뷰에 촬영한 사진 기록
             } else {
                 val decode = ImageDecoder.createSource(
                     this.contentResolver,
                     Uri.fromFile(file)
                 )
                 bitmap = ImageDecoder.decodeBitmap(decode)
-                binding.ivPicture.setImageBitmap(bitmap)
+                //binding.ivPicture.setImageBitmap(bitmap)
+                Glide.with(getApplicationContext())
+                    .load(Uri.fromFile(file))
+                    .into(binding.ivPicture)
             }
             savePhoto(bitmap)
 
@@ -208,10 +384,14 @@ class MainActivity : AppCompatActivity() {
             val uri: Uri? = data?.data
             val bitmap : Bitmap
 
-            bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            //bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
             // Log.d(TAG, String.valueOf(bitmap));
-            Toast.makeText(this,getPathFromUri(uri),Toast.LENGTH_SHORT).show()  // 저장 경로 확인
-            binding.ivPicture.setImageBitmap(bitmap)
+            //Toast.makeText(this,getPathFromUri(uri),Toast.LENGTH_SHORT).show()  // 저장 경로 확인
+            getPathFromUri(uri)
+            //binding.ivPicture.setImageBitmap(bitmap)
+            Glide.with(getApplicationContext())
+                .load(uri)
+                .into(binding.ivPicture)
         }
 
     }
@@ -245,7 +425,7 @@ class MainActivity : AppCompatActivity() {
         val out =  FileOutputStream(folderPath + fileName)
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
        // Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
-        Toast.makeText(this , folderPath+ fileName, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(this , folderPath+ fileName, Toast.LENGTH_SHORT).show()
         filepath=folderPath+fileName
         // 저장 경로 확인
 

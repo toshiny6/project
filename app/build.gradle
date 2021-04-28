@@ -53,4 +53,8 @@ dependencies {
     //PyTorch
     implementation 'org.pytorch:pytorch_android:1.7.0'
     implementation 'org.pytorch:pytorch_android_torchvision:1.7.0'
+
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 }
