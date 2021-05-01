@@ -1,63 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#616161"
+    android:background="#F6F5F5"
+    android:backgroundTint="#FFFFFF"
     tools:context=".MainActivity">
+
 
     <Button
         android:id="@+id/btn_convert"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="60dp"
+        android:layout_marginBottom="112dp"
+        android:background="@drawable/rgb"
+        android:backgroundTint="#000000"
+        android:foreground="@drawable/rgb"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        app:backgroundTint="#0B0A0A"
+        app:backgroundTint="#333232"
         app:elevation="0dp"
-        app:icon="@android:drawable/ic_media_play"
+        app:iconTint="#00F8F5F5"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/btn_takepicture"
+        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btn_takepicture"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="116dp"
+        android:alpha="0.5"
+        android:background="@drawable/ellipse_1"
+        android:backgroundTint="@null"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:backgroundTint="@null"
+        app:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_gallery"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="#FFFFFF"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rectangle_2"
+        android:backgroundTint="#FFFFFF"
+        android:foreground="@drawable/apple_photo"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        app:backgroundTint="#040404"
+        app:backgroundTint="#333232"
         app:elevation="0dp"
-        app:icon="@android:drawable/ic_menu_gallery"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btn_camera"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:backgroundTint="#0B0B0B"
-        app:elevation="0dp"
-        app:icon="@android:drawable/ic_menu_camera"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/btn_takepicture"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/iv_picture"
-        android:layout_width="400dp"
-        android:layout_height="400dp"
+        android:layout_width="410dp"
+        android:layout_height="510dp"
         android:background="#000000"
         android:src="@drawable/ic_launcher_background"
-        app:layout_constraintBottom_toTopOf="@+id/btn_camera"
+        android:translationY="-30dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/btn_takepicture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/texture"
         app:layout_constraintVertical_bias="0.44"
-        app:srcCompat="@color/a" />
+        app:srcCompat="@color/a"
+        tools:srcCompat="@color/a" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -66,10 +92,60 @@
         android:layout_height="80dp"
         android:layout_marginBottom="228dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/btn_camera"
+        app:layout_constraintBottom_toTopOf="@+id/btn_takepicture"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0" />
+
+
+    <!-- Rectangle 1 -->
+
+    <TextureView
+        android:id="@+id/texture"
+        android:layout_width="match_parent"
+        android:layout_height="513dp"
+        android:layout_above="@+id/btn_takepicture"
+        android:layout_alignParentTop="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <View
+        android:id="@+id/rectangle_1"
+        android:layout_width="wrap_content"
+        android:layout_height="250dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/rectangle_1"
+        android:backgroundTint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="invisible" />
+
+
+    <!-- iconfinder_Apple_Photos_2697654 1 -->
+
+
+    <!-- drawable/iconfinder_.xml -->
+
+
+    <!-- Rectangle 3 -->
+
+    <!-- rgb-color-swatch-palette-flat-color-line-vector-26166372 1 -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="20dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
