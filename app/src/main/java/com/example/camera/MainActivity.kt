@@ -478,7 +478,7 @@ class MainActivity : AppCompatActivity() {
             takePicture()
 
             var num : Int=0
-            while (!(this::filepath.isInitialized))
+            while ((!(this::filepath.isInitialized))||filepath==null)
                 num=1
 
             Log.d("path!",filepath)
