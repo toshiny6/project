@@ -61,4 +61,5 @@ dependencies {
 
     //UI
     implementation 'com.fridayof1995.tabanimation:SnapTablayout:0.0.7'
+
 }

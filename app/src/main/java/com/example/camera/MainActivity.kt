@@ -73,15 +73,15 @@ class MainActivity : AppCompatActivity() {
             )
             ORIENTATIONS.append(
                 Surface.ROTATION_90,
-                0
+                90
             )
             ORIENTATIONS.append(
                 Surface.ROTATION_180,
-                270
+                90
             )
             ORIENTATIONS.append(
                 Surface.ROTATION_270,
-                180
+                90
             )
         }
     }
@@ -204,11 +204,11 @@ class MainActivity : AppCompatActivity() {
                 cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE)
             captureBuilder.addTarget(reader.surface)
 //            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
-
-            captureBuilder.set(
-                    CaptureRequest.LENS_FOCUS_DISTANCE,
-                    5f
-            );
+//
+//            captureBuilder.set(
+//                    CaptureRequest.LENS_FOCUS_DISTANCE,
+//                    5f
+//            );
             //MANUAL EXPOSURE
             captureBuilder.set(
                     CaptureRequest.CONTROL_AE_MODE,
@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
             val folderPath = "$absolutePath/Pictures/"
 
             var timestamp =  SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-            var fileName = "${timestamp}.jpg"
+            var fileName = "${timestamp}.jpeg"
             var folder = File(folderPath)
             if(!folder.isDirectory) {//현재 해당 경로에 폴더가 존재하지 않는다면
                 folder.mkdirs()
@@ -401,14 +401,14 @@ class MainActivity : AppCompatActivity() {
             )
         }
         //    captureRequestBuilder!!.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO)
-        captureRequestBuilder!!.set(
-                CaptureRequest.CONTROL_AF_MODE,
-                CaptureRequest.CONTROL_AF_MODE_OFF
-        );
-        captureRequestBuilder!!.set(
-                CaptureRequest.LENS_FOCUS_DISTANCE,
-                5f  /*0.0f means infinity focus  10f는 가까운 초점  0f에 가까울 수록 먼 곳에 초점을 잡는다.*/
-        );
+//        captureRequestBuilder!!.set(
+//                CaptureRequest.CONTROL_AF_MODE,
+//                CaptureRequest.CONTROL_AF_MODE_OFF
+//        );
+//        captureRequestBuilder!!.set(
+//                CaptureRequest.LENS_FOCUS_DISTANCE,
+//                5f  /*0.0f means infinity focus  10f는 가까운 초점  0f에 가까울 수록 먼 곳에 초점을 잡는다.*/
+//        );
         //MANUAL EXPOSURE
         captureRequestBuilder!!.set(
                 CaptureRequest.CONTROL_AE_MODE,

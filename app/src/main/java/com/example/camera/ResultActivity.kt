@@ -4,8 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,11 +17,11 @@ import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.example.camera.databinding.ActivityResultBinding
-import com.google.android.material.internal.ContextUtils.getActivity
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.Tensor
@@ -71,6 +72,7 @@ class ResultActivity : AppCompatActivity() {
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 640, 480, true)
             }
+
 
             uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
 
@@ -195,7 +197,7 @@ class ResultActivity : AppCompatActivity() {
 //        }
         //setContentView(R.layout.activity_result)
     }
-
+    
 
     private  fun goToAlbum() {
         val intent = Intent(Intent.ACTION_PICK)
