@@ -4,28 +4,96 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#A6A5A5"
     tools:context=".ResultActivity">
 
+
+    <!-- Result1 -->
+
+
     <ImageView
-        android:id="@+id/iv_output"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/ic_launcher_background"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/iv_progress"
+        android:layout_width="99dp"
+        android:layout_height="99dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_input"
-        app:layout_constraintVertical_bias="0.305" />
+        tools:layout_editor_absoluteY="330dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <ImageView
         android:id="@+id/iv_input"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="320dp"
+        android:layout_height="235dp"
+        android:layout_marginBottom="584dp"
+        android:src="@drawable/ic_launcher_background"
+        android:translationX="40dp"
+        android:translationY="175dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/original" />
+
+    <Button
+        android:id="@+id/btn_convert"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="208dp"
+        android:background="@drawable/rgb"
+        android:backgroundTint="#000000"
+        android:foreground="@drawable/rgb"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:backgroundTint="#333232"
+        app:elevation="0dp"
+        app:iconTint="#00F8F5F5"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_gallery"
+        app:layout_constraintStart_toEndOf="@+id/btn_gallery" />
+
+    <Button
+        android:id="@+id/btn_gallery"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="332dp"
+        android:background="@drawable/rectangle_2"
+        android:backgroundTint="#FFFFFF"
+        android:foreground="@drawable/apple_photo"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:backgroundTint="#333232"
+        app:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_takepicture"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/iv_output"
+        android:layout_width="320dp"
+        android:layout_height="235dp"
+        android:layout_marginTop="240dp"
+
         android:src="@drawable/ic_launcher_background"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintHorizontal_bias="0.427"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_input"
+        app:srcCompat="@drawable/original"
+        tools:visibility="invisible" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="94dp"
+        android:layout_height="90dp"
+        android:foreground="@drawable/group_5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Group 5 -->
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
