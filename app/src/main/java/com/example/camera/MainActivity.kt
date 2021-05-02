@@ -73,15 +73,15 @@ class MainActivity : AppCompatActivity() {
             )
             ORIENTATIONS.append(
                 Surface.ROTATION_90,
-                90
+                0
             )
             ORIENTATIONS.append(
                 Surface.ROTATION_180,
-                90
+                270
             )
             ORIENTATIONS.append(
                 Surface.ROTATION_270,
-                90
+                180
             )
         }
     }
@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
             val folderPath = "$absolutePath/Pictures/"
 
             var timestamp =  SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-            var fileName = "${timestamp}.jpeg"
+            var fileName = "${timestamp}.jpg"
             var folder = File(folderPath)
             if(!folder.isDirectory) {//현재 해당 경로에 폴더가 존재하지 않는다면
                 folder.mkdirs()
@@ -487,7 +487,7 @@ class MainActivity : AppCompatActivity() {
             nextIntent.putExtra("filepath", filepath)
 
             // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
-            var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
+           // var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
 
             // 블러, 리사이즈
             //var blurRadius : Int = 5 //.toFloat()
@@ -497,12 +497,12 @@ class MainActivity : AppCompatActivity() {
             //savePhoto(bm)
 
             //블러,리사이즈 처리된 input image uri
-            nextIntent.putExtra("uri", getImageUri(getApplicationContext(),bm).toString())
+            //nextIntent.putExtra("uri", getImageUri(getApplicationContext(),bm).toString())
 
             convertfilepath=filepath
             resetField(this, "filepath")
             Log.d("path3",(this::filepath.isInitialized).toString())
-                startActivity(nextIntent)
+            startActivity(nextIntent)
 
         }
 
@@ -866,7 +866,7 @@ class MainActivity : AppCompatActivity() {
             //savePhoto(bm)
 
             //블러,리사이즈 처리된 input image uri
-            nextIntent.putExtra("uri", getImageUri(getApplicationContext(),bm).toString())
+            //nextIntent.putExtra("uri", getImageUri(getApplicationContext(),bm).toString())
 
             startActivity(nextIntent)
 

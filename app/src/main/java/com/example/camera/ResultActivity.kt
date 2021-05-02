@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Matrix
-import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +17,6 @@ import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
@@ -48,9 +47,10 @@ class ResultActivity : AppCompatActivity() {
 
         loadModel()
 
-        if (intent.hasExtra("uri")) {
-            //Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
-        //   var bm : Bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath") )
+        if (intent.hasExtra("filepath")) {
+            Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
+            var bm : Bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
+
 //            // 원본 이미지 리사이즈
            // var blurRadius : Int = 7 //.toFloat()
            // bm=blur(getApplicationContext(),bm,blurRadius)
@@ -58,14 +58,15 @@ class ResultActivity : AppCompatActivity() {
 
             //savePhoto(bm)
             //Toast.makeText(this,intent.getStringExtra("uri"),Toast.LENGTH_LONG).show()
-            var uri : Uri = Uri.parse(intent.getStringExtra("uri"))
+            //var uri : Uri = Uri.parse(intent.getStringExtra("uri"))
 
 
-             try {
-                 bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace();
-            }
+//             try {
+//                 bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//            } catch (e: FileNotFoundException) {
+//                e.printStackTrace();
+//            }
+
 
             if(bm!!.width !=640 || bm!!.height != 480) {
                 var blurRadius: Int = 4 //.toFloat()
@@ -74,15 +75,21 @@ class ResultActivity : AppCompatActivity() {
             }
 
 
-            uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
 
-            Glide.with(getApplicationContext())
-                .load(uri)
-                .into(binding.ivInput)
 
+
+
+//            uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
+//
+//            Log.d("uri",uri.toString())
+//            Glide.with(getApplicationContext())
+//                .load(uri)
+//                .into(binding.ivInput)
+
+            binding.ivInput.setImageBitmap(bm)
         }
         else {
-            Toast.makeText(this, "UriError!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "filepathError!", Toast.LENGTH_SHORT).show()
         }
         binding.btnGallery.setOnClickListener{
             goToAlbum()
@@ -162,11 +169,12 @@ class ResultActivity : AppCompatActivity() {
                                 bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
                             }
 
-                            Glide.with(getApplicationContext())
-                                    .load(getImageUri(getApplicationContext(),bmp))
-                                    .into(binding.ivOutput)
+//                            Glide.with(getApplicationContext())
+//                                    .load(getImageUri(getApplicationContext(),bmp))
+//                                    .into(binding.ivOutput)
 
                             runOnUiThread{
+                                binding.ivOutput.setImageBitmap(bmp)
                                 binding.btnConvert.isVisible=false
                                 binding.btnGallery.isVisible=false
                                 binding.ivOutput.isVisible = true
@@ -197,7 +205,19 @@ class ResultActivity : AppCompatActivity() {
 //        }
         //setContentView(R.layout.activity_result)
     }
-    
+
+    private fun imgRotate(bmp : Bitmap) : Bitmap{
+        var width : Int = bmp.getWidth();
+        var height : Int = bmp.getHeight();
+        val matrix = Matrix()
+        matrix.postRotate(90f)
+
+        val resizedBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true)
+        bmp.recycle()
+
+        return resizedBitmap
+    }
+
 
     private  fun goToAlbum() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -224,6 +244,16 @@ class ResultActivity : AppCompatActivity() {
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 640, 480, true)
             }
+
+
+            val matrix = Matrix()
+
+            matrix.postRotate(90f)
+
+            bm =
+                bm?.let { Bitmap.createBitmap(it, 0, 0, bm!!.getWidth(), bm!!.getHeight(), matrix, true) };
+
+
 
             uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
 
