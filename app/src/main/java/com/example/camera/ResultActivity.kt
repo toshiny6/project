@@ -49,8 +49,9 @@ class ResultActivity : AppCompatActivity() {
 
         if (intent.hasExtra("filepath")) {
             Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
-            var bm : Bitmap = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
+            bm = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
 
+            Log.d("intent", intent.getStringExtra("filepath").toString())
 //            // 원본 이미지 리사이즈
            // var blurRadius : Int = 7 //.toFloat()
            // bm=blur(getApplicationContext(),bm,blurRadius)
@@ -76,9 +77,6 @@ class ResultActivity : AppCompatActivity() {
 
 
 
-
-
-
 //            uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
 //
 //            Log.d("uri",uri.toString())
@@ -91,6 +89,7 @@ class ResultActivity : AppCompatActivity() {
         else {
             Toast.makeText(this, "filepathError!", Toast.LENGTH_SHORT).show()
         }
+
         binding.btnGallery.setOnClickListener{
             goToAlbum()
         }
@@ -174,10 +173,11 @@ class ResultActivity : AppCompatActivity() {
 //                                    .into(binding.ivOutput)
 
                             runOnUiThread{
-                                binding.ivOutput.setImageBitmap(bmp)
+
                                 binding.btnConvert.isVisible=false
                                 binding.btnGallery.isVisible=false
                                 binding.ivOutput.isVisible = true
+                                binding.ivOutput.setImageBitmap(bmp)
                             }
                             val end = System.nanoTime()
                             Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
@@ -246,20 +246,12 @@ class ResultActivity : AppCompatActivity() {
             }
 
 
-            val matrix = Matrix()
+            //uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
 
-            matrix.postRotate(90f)
-
-            bm =
-                bm?.let { Bitmap.createBitmap(it, 0, 0, bm!!.getWidth(), bm!!.getHeight(), matrix, true) };
-
-
-
-            uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
-
-            Glide.with(getApplicationContext())
-                    .load(uri)
-                    .into(binding.ivInput)
+//            Glide.with(getApplicationContext())
+//                    .load(uri)
+//                    .into(binding.ivInput)
+            binding.ivInput.setImageBitmap(bm)
         }
 
     }

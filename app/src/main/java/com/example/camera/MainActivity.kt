@@ -26,20 +26,16 @@ import android.util.Size
 import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.camera.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
-import org.pytorch.IValue
 import org.pytorch.Module
-import org.pytorch.Tensor
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -267,12 +263,27 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+
+
                 @Throws(IOException::class)
                 private fun save(bytes: ByteArray) {
                     var output: OutputStream? = null
                     try {
+
+                        val options: BitmapFactory.Options = BitmapFactory.Options()
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888
+                        var bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
+                        var matrix = Matrix()
+                        matrix.postRotate(90f);
+                        bitmap =  Bitmap.createBitmap(bitmap, 0, 0, 640, 480, matrix, true);
+                        val stream = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                        val currentData: ByteArray = stream.toByteArray()
+
+
                         output = FileOutputStream(file)
-                        output.write(bytes)
+                        output.write(currentData)
+                        //output.write(bytes)
                     } finally {
                         output?.close()
                         filepath=folderPath+fileName
@@ -319,6 +330,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
 
     protected fun createCameraPreview() {
         try {
@@ -486,18 +498,21 @@ class MainActivity : AppCompatActivity() {
             val nextIntent = Intent(this, ResultActivity::class.java)
             nextIntent.putExtra("filepath", filepath)
 
-            // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
-           // var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
+
 
             // 블러, 리사이즈
             //var blurRadius : Int = 5 //.toFloat()
             //bm=blur(getApplicationContext(),bm,blurRadius)
             //bm = Bitmap.createScaledBitmap(bm, 640 , 480, true)
 
-            //savePhoto(bm)
+            //savePhoto(bm)/
 
             //블러,리사이즈 처리된 input image uri
+
+            // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
+            //var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
             //nextIntent.putExtra("uri", getImageUri(getApplicationContext(),bm).toString())
+            //////
 
             convertfilepath=filepath
             resetField(this, "filepath")
@@ -651,26 +666,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    fun blur(context : Context, sentBitmap : Bitmap, radius : Int) : Bitmap{
-//
-//        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
-//            var bitmap : Bitmap = sentBitmap.copy(sentBitmap.getConfig(), true)
-//
-//            val rs : RenderScript = RenderScript.create(context)
-//            val input : Allocation = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
-//                Allocation.USAGE_SCRIPT)
-//            val output : Allocation = Allocation.createTyped(rs, input.getType())
-//            val script : ScriptIntrinsicBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
-//            script.setRadius(radius.toFloat()) //0.0f ~ 25.0f
-//            script.setInput(input)
-//            script.forEach(output)
-//            output.copyTo(bitmap)
-//            return bitmap
-//        }
-//        else
-//            return sentBitmap
-//
-//    }
+    fun blur(context : Context, sentBitmap : Bitmap, radius : Int) : Bitmap{
+
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN) {
+            var bitmap : Bitmap = sentBitmap.copy(sentBitmap.getConfig(), true)
+
+            val rs : RenderScript = RenderScript.create(context)
+            val input : Allocation = Allocation.createFromBitmap(rs, sentBitmap, Allocation.MipmapControl.MIPMAP_NONE,
+                Allocation.USAGE_SCRIPT)
+            val output : Allocation = Allocation.createTyped(rs, input.getType())
+            val script : ScriptIntrinsicBlur = ScriptIntrinsicBlur.create(rs, Element.U8_4(rs))
+            script.setRadius(radius.toFloat()) //0.0f ~ 25.0f
+            script.setInput(input)
+            script.forEach(output)
+            output.copyTo(bitmap)
+            return bitmap
+        }
+        else
+            return sentBitmap
+
+    }
 
     // 절대경로 -> uri
     fun getUriFromPath(filePath: String): Uri {
