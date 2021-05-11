@@ -19,7 +19,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import com.bumptech.glide.Glide
 import com.example.camera.databinding.ActivityResultBinding
 import org.pytorch.IValue
 import org.pytorch.Module
@@ -45,6 +44,7 @@ class ResultActivity : AppCompatActivity() {
         //binding.ivProgress.isVisible = false
         binding.ivOutput.isVisible = false
         binding.btnSave.isVisible = false
+        binding.viewRsl.isVisible = false
 
         loadModel()
 
@@ -146,7 +146,8 @@ class ResultActivity : AppCompatActivity() {
                                 binding.btnConvert.isVisible=false
                                 binding.ivOutput.isVisible = true
                                 binding.btnSave.isVisible = true
-                                binding.ivOutput.setImageBitmap(bmp)
+                                binding.viewRsl.isVisible = true
+                                binding.ivOutput.setImageBitmap(RemoveNoise(bmp))
                             }
                             val end = System.nanoTime()
                             Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
@@ -289,5 +290,35 @@ class ResultActivity : AppCompatActivity() {
             return bitmap
         }
         else return sentBitmap
+    }
+
+    fun RemoveNoise(bmap: Bitmap): Bitmap? {
+        for (x in 0 until bmap.width) {
+            for (y in 0 until bmap.height) {
+                val pixel = bmap.getPixel(x, y)
+                val R = Color.red(pixel)
+                val G = Color.green(pixel)
+                val B = Color.blue(pixel)
+                if (R < 162 && G < 162 && B < 162) bmap.setPixel(
+                    x,
+                    y,
+                    Color.BLACK
+                )
+            }
+        }
+        for (x in 0 until bmap.width) {
+            for (y in 0 until bmap.height) {
+                val pixel = bmap.getPixel(x, y)
+                val R = Color.red(pixel)
+                val G = Color.green(pixel)
+                val B = Color.blue(pixel)
+                if (R > 162 && G > 162 && B > 162) bmap.setPixel(
+                    x,
+                    y,
+                    Color.WHITE
+                )
+            }
+        }
+        return bmap
     }
 }

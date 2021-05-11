@@ -71,7 +71,7 @@
 
     <ImageView
         android:id="@+id/iv_output"
-        android:layout_width="280dp"
+        android:layout_width="320dp"
         android:layout_height="235dp"
 
         android:layout_marginStart="16dp"
@@ -85,7 +85,7 @@
         tools:visibility="invisible" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/view_org"
         android:layout_width="320dp"
         android:layout_height="42dp"
         app:layout_constraintBottom_toTopOf="@+id/iv_input"
@@ -93,8 +93,20 @@
         app:layout_constraintHorizontal_bias="0.56"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.888"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ic_input" />
+
+    <ImageView
+        android:id="@+id/view_rsl"
+        android:layout_width="320dp"
+        android:layout_height="42dp"
+        app:layout_constraintBottom_toTopOf="@+id/iv_output"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.56"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_output" />
 
     <View
         android:id="@+id/view"
