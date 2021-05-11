@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity() {
             );
             captureBuilder.set(
                     CaptureRequest.SENSOR_EXPOSURE_TIME,
-                    1000000000L / 80
+                    1000000000L / 60
             );
             captureBuilder.set(
                     CaptureRequest.SENSOR_SENSITIVITY,
@@ -412,7 +412,7 @@ class MainActivity : AppCompatActivity() {
         // AE MODE OFF에서만 사용이 가능하다. ns
         captureRequestBuilder!!.set(
                 CaptureRequest.SENSOR_EXPOSURE_TIME, // 각 픽셀이 빛에 노출되는 시간을 설정
-                1000000000L / 80 /* 30일때 너무 밝음 */
+                1000000000L / 60 /* 30일때 너무 밝음 */
         );
 
         Log.d(TAG, "nano seconds:"+(1000000000L/30));
@@ -463,6 +463,7 @@ class MainActivity : AppCompatActivity() {
 
         mBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setPermission() // 권한을 체크하는 테스트 수행
 
         //카메라 프리뷰
         binding!!.texture.surfaceTextureListener = textureListener
@@ -484,7 +485,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        setPermission() // 권한을 체크하는 테스트 수행
 
         binding.btnGallery.setOnClickListener {
             // 사진 불러오는 함수 실행
