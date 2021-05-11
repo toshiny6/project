@@ -185,11 +185,11 @@ class MainActivity : AppCompatActivity() {
                     characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         ?.getOutputSizes(ImageFormat.JPEG)
             }
-            var width = 640
-            var height = 480
+            var width = 1080
+            var height = 1080
             if (jpegSizes != null && 0 < jpegSizes.size) {
-                width = 640//jpegSizes[0].width
-                height = 480//jpegSizes[0].height
+                width = 1080//jpegSizes[0].width
+                height = 1080//jpegSizes[0].height
             }
             val reader =
                 ImageReader.newInstance(width, height, ImageFormat.JPEG, 1)
@@ -268,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                         var bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                         var matrix = Matrix()
                         matrix.postRotate(90f);
-                        bitmap =  Bitmap.createBitmap(bitmap, 0, 0, 640, 480, matrix, true);
+                        bitmap =  Bitmap.createBitmap(bitmap, 0, 0, 1080, 1080, matrix, true);
                         val stream = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
                         val currentData: ByteArray = stream.toByteArray()
@@ -601,6 +601,7 @@ class MainActivity : AppCompatActivity() {
 
             // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
             var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))
+            startActivity(nextIntent)
         }
     }
 

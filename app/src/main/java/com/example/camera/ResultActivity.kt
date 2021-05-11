@@ -34,6 +34,7 @@ class ResultActivity : AppCompatActivity() {
     private  val binding get() = mBinding!!
     private var mModule: Module? = null
     var bm : Bitmap? = null;
+    lateinit var bmp : Bitmap
     val REQUEST_GALLERY_IMAGE = 1 // 갤러리 이미지 불러오기
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,6 @@ class ResultActivity : AppCompatActivity() {
         mBinding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //binding.ivProgress.isVisible = false
         binding.ivOutput.isVisible = false
         binding.btnSave.isVisible = false
         binding.viewRsl.isVisible = false
@@ -54,11 +54,12 @@ class ResultActivity : AppCompatActivity() {
 
             Log.d("intent", intent.getStringExtra("filepath").toString())
 
-            if(bm!!.width !=640 || bm!!.height != 480) {
-                var blurRadius: Int = 4 //.toFloat()
+            if(bm!!.width !=720 || bm!!.height != 720) {
+                var blurRadius: Int = 1 //.toFloat()
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
-                bm = Bitmap.createScaledBitmap(bm!!, 640, 480, true)
+                bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
             }
+
 
             binding.ivInput.setImageBitmap(bm)
         }
@@ -114,8 +115,7 @@ class ResultActivity : AppCompatActivity() {
 
 
                             // Create empty bitmap in ARGB format
-                            val bmp: Bitmap =
-                                    width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                            bmp=width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
                             val _pixels: IntArray = IntArray(width * height!! * 4)
 
                             // mapping smallest value to 0 and largest value to 255
@@ -147,7 +147,7 @@ class ResultActivity : AppCompatActivity() {
                                 binding.ivOutput.isVisible = true
                                 binding.btnSave.isVisible = true
                                 binding.viewRsl.isVisible = true
-                                binding.ivOutput.setImageBitmap(RemoveNoise(bmp))
+                                binding.ivOutput.setImageBitmap(bmp)
                             }
                             val end = System.nanoTime()
                             Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
@@ -159,20 +159,12 @@ class ResultActivity : AppCompatActivity() {
             )
             thread.run()
         }
+
+        binding.btnSave.setOnClickListener{
+            savePhoto(bmp)
+            Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
+        }
     }
-
-    private fun imgRotate(bmp : Bitmap) : Bitmap{
-        var width : Int = bmp.getWidth();
-        var height : Int = bmp.getHeight();
-        val matrix = Matrix()
-        matrix.postRotate(90f)
-
-        val resizedBitmap = Bitmap.createBitmap(bmp, 0, 0, width, height, matrix, true)
-        bmp.recycle()
-
-        return resizedBitmap
-    }
-
 
     private  fun goToAlbum() {
         val intent = Intent(Intent.ACTION_PICK)
@@ -194,11 +186,12 @@ class ResultActivity : AppCompatActivity() {
                 e.printStackTrace();
             }
 
-            if(bm!!.width !=640 || bm!!.height != 480) {
-                var blurRadius: Int = 4 //.toFloat()
+            if(bm!!.width !=720 || bm!!.height != 720) {
+                var blurRadius: Int = 1 //.toFloat()
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
-                bm = Bitmap.createScaledBitmap(bm!!, 640, 480, true)
+                bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
             }
+
             binding.ivInput.setImageBitmap(bm)
         }
     }
@@ -258,7 +251,7 @@ class ResultActivity : AppCompatActivity() {
 
     private fun savePhoto(bitmap: Bitmap) {
         val absolutePath = "/storage/emulated/0/"
-        val folderPath = "$absolutePath/Pictures/Resized/"
+        val folderPath = "$absolutePath/Pictures/Result/"
         val timestamp =  SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
         val fileName = "${timestamp}.jpeg"
         val folder = File(folderPath)
