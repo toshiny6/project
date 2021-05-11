@@ -42,8 +42,9 @@ class ResultActivity : AppCompatActivity() {
         mBinding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.ivProgress.isVisible = false
+        //binding.ivProgress.isVisible = false
         binding.ivOutput.isVisible = false
+        binding.btnSave.isVisible = false
 
         loadModel()
 
@@ -52,22 +53,6 @@ class ResultActivity : AppCompatActivity() {
             bm = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
 
             Log.d("intent", intent.getStringExtra("filepath").toString())
-//            // 원본 이미지 리사이즈
-           // var blurRadius : Int = 7 //.toFloat()
-           // bm=blur(getApplicationContext(),bm,blurRadius)
-           // bm = Bitmap.createScaledBitmap(bm,640,480,true)
-
-            //savePhoto(bm)
-            //Toast.makeText(this,intent.getStringExtra("uri"),Toast.LENGTH_LONG).show()
-            //var uri : Uri = Uri.parse(intent.getStringExtra("uri"))
-
-
-//             try {
-//                 bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-//            } catch (e: FileNotFoundException) {
-//                e.printStackTrace();
-//            }
-
 
             if(bm!!.width !=640 || bm!!.height != 480) {
                 var blurRadius: Int = 4 //.toFloat()
@@ -75,24 +60,12 @@ class ResultActivity : AppCompatActivity() {
                 bm = Bitmap.createScaledBitmap(bm!!, 640, 480, true)
             }
 
-
-
-//            uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
-//
-//            Log.d("uri",uri.toString())
-//            Glide.with(getApplicationContext())
-//                .load(uri)
-//                .into(binding.ivInput)
-
             binding.ivInput.setImageBitmap(bm)
         }
         else {
             Toast.makeText(this, "filepathError!", Toast.LENGTH_SHORT).show()
         }
 
-        binding.btnGallery.setOnClickListener{
-            goToAlbum()
-        }
         binding.btnConvert.setOnClickListener {
 //            binding.ivProgress.isVisible = true
 //            Glide.with(this).load(R.drawable.loading).into(binding.ivProgress)
@@ -168,15 +141,11 @@ class ResultActivity : AppCompatActivity() {
                                 bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
                             }
 
-//                            Glide.with(getApplicationContext())
-//                                    .load(getImageUri(getApplicationContext(),bmp))
-//                                    .into(binding.ivOutput)
-
                             runOnUiThread{
 
                                 binding.btnConvert.isVisible=false
-                                binding.btnGallery.isVisible=false
                                 binding.ivOutput.isVisible = true
+                                binding.btnSave.isVisible = true
                                 binding.ivOutput.setImageBitmap(bmp)
                             }
                             val end = System.nanoTime()
@@ -187,23 +156,8 @@ class ResultActivity : AppCompatActivity() {
                         }
                     }
             )
-
             thread.run()
-
         }
-//        if (intent.hasExtra("resulturi")) {
-//
-//            val resulturi : Uri = Uri.parse(intent.getStringExtra("resulturi"))
-//
-//            Glide.with(getApplicationContext())
-//                .load(intent.getStringExtra("resulturi"))
-//                .into(binding.ivOutput)
-//
-//        }
-//        else {
-//            Toast.makeText(this, "resultError!", Toast.LENGTH_SHORT).show()
-//        }
-        //setContentView(R.layout.activity_result)
     }
 
     private fun imgRotate(bmp : Bitmap) : Bitmap{
@@ -244,18 +198,9 @@ class ResultActivity : AppCompatActivity() {
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 640, 480, true)
             }
-
-
-            //uri = bm?.let { this!!.getImageUri(getApplicationContext(), it) }!!
-
-//            Glide.with(getApplicationContext())
-//                    .load(uri)
-//                    .into(binding.ivInput)
             binding.ivInput.setImageBitmap(bm)
         }
-
     }
-
 
     private fun loadModel(){
         try{
@@ -288,8 +233,6 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
-
-
     //bitmap to uri
     private fun getImageUri(
         context: Context,
@@ -305,7 +248,6 @@ class ResultActivity : AppCompatActivity() {
         )
         return Uri.parse(path)
     }
-
 
     override fun onDestroy() {
         // onDestroy 에서 binding class 인스턴스 참조를 정리해주어야 한다.
@@ -346,9 +288,6 @@ class ResultActivity : AppCompatActivity() {
             output.copyTo(bitmap)
             return bitmap
         }
-        else
-            return sentBitmap
-
+        else return sentBitmap
     }
-
-    }
+}

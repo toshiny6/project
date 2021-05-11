@@ -9,29 +9,6 @@
     android:backgroundTint="#FFFFFF"
     tools:context=".MainActivity">
 
-
-    <Button
-        android:id="@+id/btn_convert"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginBottom="112dp"
-        android:background="@drawable/rgb"
-        android:backgroundTint="#000000"
-        android:foreground="@drawable/rgb"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:backgroundTint="#333232"
-        app:elevation="0dp"
-        app:iconTint="#00F8F5F5"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/btn_takepicture"
-        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"
-        app:layout_constraintVertical_bias="0.0" />
-
     <Button
         android:id="@+id/btn_takepicture"
         android:layout_width="70dp"
@@ -49,24 +26,47 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
+    <!--    <Button-->
+<!--        android:id="@+id/btn_gallery2"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:background="@drawable/rectangle_2"-->
+<!--        android:backgroundTint="#FFFFFF"-->
+<!--        android:foreground="@drawable/apple_photo"-->
+<!--        android:insetTop="0dp"-->
+<!--        android:insetBottom="0dp"-->
+<!--        app:backgroundTint="#333232"-->
+<!--        app:elevation="0dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"-->
+<!--        app:layout_constraintVertical_bias="0.0" />-->
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_gallery"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/rectangle_2"
-        android:backgroundTint="#FFFFFF"
-        android:foreground="@drawable/apple_photo"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        app:backgroundTint="#333232"
-        app:elevation="0dp"
+        android:layout_width="65dp"
+        android:layout_height="70dp"
+        android:backgroundTint="@color/white"
+        android:elevation="5dp"
+
+        app:icon="@drawable/ic_photo_library_black_24dp"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
+        app:iconSize="50dp"
+        app:iconTint="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_takepicture"
-        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.835"
+        app:rippleColor="@color/btnClick"
+        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+        app:strokeColor="@color/black"
+        app:strokeWidth="3dp">
+
+    </com.google.android.material.button.MaterialButton>
 
     <ImageView
         android:id="@+id/iv_picture"

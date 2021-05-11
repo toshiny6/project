@@ -5,15 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashActivity">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Light Up"
-        android:textSize="50dp"
-        android:layout_gravity="center"
-        android:gravity="center" >
-    </TextView>
+    tools:context=".SplashActivity"
+    android:background="@drawable/ic_splash">
 
 </LinearLayout>
