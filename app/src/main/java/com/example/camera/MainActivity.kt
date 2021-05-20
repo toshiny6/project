@@ -27,16 +27,23 @@ import android.util.Size
 import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
+import android.view.View
+import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.isVisible
 import com.example.camera.databinding.ActivityMainBinding
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
+import org.pytorch.IValue
 import org.pytorch.Module
+import org.pytorch.Tensor
 import java.io.*
 import java.text.SimpleDateFormat
+import java.time.OffsetDateTime
 import java.util.*
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,6 +58,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var filepath : String
     lateinit var convertfilepath : String
     lateinit var _bm : Bitmap
+    lateinit var prebm : Bitmap
 
 
     //카메라 프리뷰
@@ -185,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                     characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         ?.getOutputSizes(ImageFormat.JPEG)
             }
-            var width = 1080
+            var width = 1090
             var height = 1080
             if (jpegSizes != null && 0 < jpegSizes.size) {
                 width = 1080//jpegSizes[0].width
@@ -262,7 +270,6 @@ class MainActivity : AppCompatActivity() {
                 private fun save(bytes: ByteArray) {
                     var output: OutputStream? = null
                     try {
-
                         val options: BitmapFactory.Options = BitmapFactory.Options()
                         options.inPreferredConfig = Bitmap.Config.ARGB_8888
                         var bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
@@ -273,7 +280,6 @@ class MainActivity : AppCompatActivity() {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
                         val currentData: ByteArray = stream.toByteArray()
 
-
                         output = FileOutputStream(file)
                         output.write(currentData)
                         //output.write(bytes)
@@ -281,8 +287,10 @@ class MainActivity : AppCompatActivity() {
                         output?.close()
                         filepath=folderPath+fileName
                         Log.d("path",filepath)
+                        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+filepath)))
+                        }
 
-                    }
+
                 }
 
             }
@@ -465,6 +473,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setPermission() // 권한을 체크하는 테스트 수행
 
+        loadModel()
+
         //카메라 프리뷰
         binding!!.texture.surfaceTextureListener = textureListener
         binding!!.btnTakepicture.setOnClickListener {
@@ -483,13 +493,139 @@ class MainActivity : AppCompatActivity() {
             Log.d("path3",(this::filepath.isInitialized).toString())
             startActivity(nextIntent)
 
-        }
 
+        }
+        binding.ivPre.isVisible=false
+
+        binding.btnPreview.setOnClickListener {
+            if(binding.ivPre.getVisibility() == View.VISIBLE)
+            {
+                binding.ivPre.isVisible = false
+                binding.btnPreview.setText("On")
+            }
+            else
+            {
+                binding.ivPre.isVisible = true
+                binding.btnPreview.setText("Off")
+            }
+        }
 
         binding.btnGallery.setOnClickListener {
             // 사진 불러오는 함수 실행
             goToAlbum()
+            if (this::prebm.isInitialized)
+                Log.d("prebm",(prebm.width).toString())
         }
+
+        val timer = Timer()
+
+        val TT: TimerTask = object : TimerTask() {
+            override fun run() {
+
+                prebm = binding.texture.getBitmap()!!
+                val width = prebm.width
+                val height = prebm.height
+                val pixels = IntArray(prebm.height * prebm.width)
+                prebm.getPixels(pixels, 0, width, 0, 0, width, height)
+                prebm = blur(getApplicationContext(), prebm, 3)
+                prebm = Bitmap.createScaledBitmap(prebm, 240, 240, true)
+
+                val thread = Thread(
+                        Runnable {
+
+                            val begin = System.nanoTime()
+                            try{
+
+                                var x: Int = 0
+                                var y: Int = 0
+                                var width: Int = prebm!!.width
+                                var height: Int = prebm!!.height
+
+
+                                val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
+                                if (prebm != null) {
+                                    val pixelsCount = height * width
+                                    val pixels = IntArray(pixelsCount)
+                                    var outBufferOffset = 0
+                                    prebm!!.getPixels(pixels, 0, width, x, y, width, height)
+                                    val offset_b = 2 * pixelsCount
+                                    for (i in 0 until pixelsCount) {
+                                        val c = pixels[i]
+                                        val r = (c shr 16 and 0xff) / 255.0f
+                                        val g = (c shr 8 and 0xff) / 255.0f
+                                        val b = (c and 0xff) / 255.0f
+                                        floatBuffer.put(outBufferOffset + i, r)
+                                        floatBuffer.put(outBufferOffset + pixelsCount + i, g)
+                                        floatBuffer.put(outBufferOffset + offset_b + i, b)
+                                    }
+                                }
+                                var inputTensor: Tensor = Tensor.fromBlob(
+                                        floatBuffer,
+                                        longArrayOf(1, 3, height.toLong(), width.toLong())
+                                )
+
+
+                                // outputTensor 생성 및 forward
+                                var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
+
+                                val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
+
+
+                                // bitmap으로 만들어서 반환
+
+
+                                // Create empty bitmap in ARGB format
+                                var bmp=width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                                val _pixels: IntArray = IntArray(width * height!! * 4)
+
+                                // mapping smallest value to 0 and largest value to 255
+                                val maxValue = dataAsFloatArray.max() ?: 1.0f
+                                val minValue = dataAsFloatArray.min() ?: -1.0f
+                                val delta = maxValue - minValue
+
+                                // Define if float min..max will be mapped to 0..255 or 255..0
+                                val conversion =
+                                        { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
+
+                                // copy each value from float array to RGB channels
+                                if (width != null) {
+                                    for (i in 0 until width * height) {
+                                        val r = conversion(dataAsFloatArray[i])
+                                        val g = conversion(dataAsFloatArray[i + width * height])
+                                        val b = conversion(dataAsFloatArray[i + 2 * width * height])
+                                        _pixels[i] =
+                                                Color.rgb(r, g, b) // you might need to import for rgb()
+                                    }
+                                }
+                                if (width != null) {
+                                    bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
+                                }
+
+                                runOnUiThread{
+
+                                    binding.ivPre.setImageBitmap(bmp)
+                                }
+                                val end = System.nanoTime()
+                                Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
+                            }catch(e:Exception)
+                            {
+                                e.printStackTrace()
+                            }
+                        }
+                )
+                thread.run()
+
+                // 반복실행할 구문
+
+
+            }
+        }
+
+
+
+        timer.schedule(TT, 500, 10) //Timer 실행
+
+
     }
 
     fun resetField(target: Any, fieldName: String) {
@@ -614,6 +750,34 @@ class MainActivity : AppCompatActivity() {
         cursor.close()
         filepath=path
         return path
+    }
+
+    private fun loadModel(){
+        try{
+            mModule = Module.load(assetFilePath(this, "lowlight_model1.pt"))
+            Log.d("Model", "Model Loaded Successfully")
+        } catch (e: IOException){
+            Log.e("UseModel", "Load Model Failed", e)
+        }
+    }
+
+    @Throws(IOException::class)
+    fun assetFilePath(context: Context, assetName: String?): String? {
+        val file = File(context.filesDir, assetName!!)
+        if (file.exists() && file.length() > 0) {
+            return file.absolutePath
+        }
+        context.assets.open(assetName).use { `is` ->
+            FileOutputStream(file).use { os ->
+                val buffer = ByteArray(4 * 1024)
+                var read: Int
+                while (`is`.read(buffer).also { read = it } != -1) {
+                    os.write(buffer, 0, read)
+                }
+                os.flush()
+            }
+            return file.absolutePath
+        }
     }
 
     /**

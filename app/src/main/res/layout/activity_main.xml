@@ -5,15 +5,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F5F5"
+    android:background="#FFFFFF"
     android:backgroundTint="#FFFFFF"
     tools:context=".MainActivity">
+
+    <!--    <Button-->
+    <!--        android:id="@+id/btn_gallery2"-->
+    <!--        android:layout_width="40dp"-->
+    <!--        android:layout_height="40dp"-->
+    <!--        android:layout_marginTop="16dp"-->
+    <!--        android:background="@drawable/rectangle_2"-->
+    <!--        android:backgroundTint="#FFFFFF"-->
+    <!--        android:foreground="@drawable/apple_photo"-->
+    <!--        android:insetTop="0dp"-->
+    <!--        android:insetBottom="0dp"-->
+    <!--        app:backgroundTint="#333232"-->
+    <!--        app:elevation="0dp"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--        app:layout_constraintStart_toStartOf="parent"-->
+    <!--        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"-->
+    <!--        app:layout_constraintVertical_bias="0.0" />-->
 
     <Button
         android:id="@+id/btn_takepicture"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="116dp"
+        android:layout_marginBottom="60dp"
         android:alpha="0.5"
         android:background="@drawable/ellipse_1"
         android:backgroundTint="@null"
@@ -23,25 +40,8 @@
         app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.483"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <!--    <Button-->
-<!--        android:id="@+id/btn_gallery2"-->
-<!--        android:layout_width="40dp"-->
-<!--        android:layout_height="40dp"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:background="@drawable/rectangle_2"-->
-<!--        android:backgroundTint="#FFFFFF"-->
-<!--        android:foreground="@drawable/apple_photo"-->
-<!--        android:insetTop="0dp"-->
-<!--        android:insetBottom="0dp"-->
-<!--        app:backgroundTint="#333232"-->
-<!--        app:elevation="0dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="@+id/btn_takepicture"-->
-<!--        app:layout_constraintVertical_bias="0.0" />-->
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_gallery"
@@ -57,10 +57,10 @@
         app:iconTint="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_takepicture"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.835"
+        app:layout_constraintVertical_bias="0.909"
         app:rippleColor="@color/btnClick"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
         app:strokeColor="@color/black"
@@ -104,21 +104,21 @@
 
     <TextureView
         android:id="@+id/texture"
-        android:layout_width="match_parent"
-        android:layout_height="485dp"
+        android:layout_width="360dp"
+        android:layout_height="360dp"
         android:layout_above="@+id/btn_takepicture"
         android:layout_alignParentTop="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.49"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.339" />
 
     <View
         android:id="@+id/rectangle_1"
         android:layout_width="wrap_content"
-        android:layout_height="250dp"
+        android:layout_height="170dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/rectangle_1"
@@ -139,12 +139,47 @@
 
     <!-- rgb-color-swatch-palette-flat-color-line-vector-26166372 1 -->
 
+    <View
+        android:id="@+id/rectangle_"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/rectangle_1"
+        android:backgroundTint="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:visibility="invisible" />
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="20dp" />
+
+    <ImageView
+        android:id="@+id/iv_pre"
+        android:layout_width="360dp"
+        android:layout_height="360dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/texture"
+        app:srcCompat="@drawable/rectangle_1" />
+
+    <Button
+        android:id="@+id/btn_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#CDC4C4"
+        android:text="On"
+        tools:layout_editor_absoluteX="292dp"
+        tools:layout_editor_absoluteY="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

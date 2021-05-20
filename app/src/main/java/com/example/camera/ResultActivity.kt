@@ -55,6 +55,7 @@ class ResultActivity : AppCompatActivity() {
             Log.d("intent", intent.getStringExtra("filepath").toString())
 
             if(bm!!.width !=720 || bm!!.height != 720) {
+                //블러 강도 결정
                 var blurRadius: Int = 1 //.toFloat()
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
@@ -65,6 +66,11 @@ class ResultActivity : AppCompatActivity() {
         }
         else {
             Toast.makeText(this, "filepathError!", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.btnGallery2.setOnClickListener {
+            // 사진 불러오는 함수 실행
+            goToAlbum()
         }
 
         binding.btnConvert.setOnClickListener {
@@ -110,6 +116,7 @@ class ResultActivity : AppCompatActivity() {
                             var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
 
                             val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
+
 
                             // bitmap으로 만들어서 반환
 
@@ -172,29 +179,29 @@ class ResultActivity : AppCompatActivity() {
         startActivityForResult(intent, REQUEST_GALLERY_IMAGE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        //startActivityForResult를 통해서 기본 카메라 앱으로부터 받아온 사진 결과 값
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK)
-        {
-            var uri: Uri? = data?.data
-
-            try {
-                bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace();
-            }
-
-            if(bm!!.width !=720 || bm!!.height != 720) {
-                var blurRadius: Int = 1 //.toFloat()
-                bm = blur(getApplicationContext(), bm!!, blurRadius)
-                bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
-            }
-
-            binding.ivInput.setImageBitmap(bm)
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        //startActivityForResult를 통해서 기본 카메라 앱으로부터 받아온 사진 결과 값
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if(requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK)
+//        {
+//            var uri: Uri? = data?.data
+//
+//            try {
+//                bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//            } catch (e: FileNotFoundException) {
+//                e.printStackTrace();
+//            }
+//
+//            if(bm!!.width !=720 || bm!!.height != 720) {
+//                var blurRadius: Int = 1 //.toFloat()
+//                bm = blur(getApplicationContext(), bm!!, blurRadius)
+//                bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
+//            }
+//
+//            binding.ivInput.setImageBitmap(bm)
+//        }
+//    }
 
     private fun loadModel(){
         try{
