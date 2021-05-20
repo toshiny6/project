@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -36,6 +37,7 @@ class ResultActivity : AppCompatActivity() {
     var bm : Bitmap? = null;
     lateinit var bmp : Bitmap
     val REQUEST_GALLERY_IMAGE = 1 // 갤러리 이미지 불러오기
+    val loadingDialog = LoadingDialog(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +49,110 @@ class ResultActivity : AppCompatActivity() {
         binding.viewRsl.isVisible = false
 
         loadModel()
+
+        class logic(context: Context?) :
+                AsyncTask<Bitmap?, Bitmap?, Bitmap?>() {
+            private var mContext: Context? = null
+
+            init {
+                mContext = context
+            }
+
+            override fun doInBackground(vararg params: Bitmap?): Bitmap? {
+                var img : Bitmap? = null
+                try {
+                    var x: Int = 0
+                    var y: Int = 0
+                    var width: Int = params[0]!!.width
+                    var height: Int = params[0]!!.height
+
+
+                    val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
+                    if (params[0] != null) {
+                        val pixelsCount = height * width
+                        val pixels = IntArray(pixelsCount)
+                        var outBufferOffset = 0
+                        params[0]!!.getPixels(pixels, 0, width, x, y, width, height)
+                        val offset_b = 2 * pixelsCount
+                        for (i in 0 until pixelsCount) {
+                            val c = pixels[i]
+                            val r = (c shr 16 and 0xff) / 255.0f
+                            val g = (c shr 8 and 0xff) / 255.0f
+                            val b = (c and 0xff) / 255.0f
+                            floatBuffer.put(outBufferOffset + i, r)
+                            floatBuffer.put(outBufferOffset + pixelsCount + i, g)
+                            floatBuffer.put(outBufferOffset + offset_b + i, b)
+                        }
+                    }
+                    var inputTensor: Tensor = Tensor.fromBlob(
+                            floatBuffer,
+                            longArrayOf(1, 3, height.toLong(), width.toLong())
+                    )
+
+
+                    // outputTensor 생성 및 forward
+                    var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
+                    // val paraArray = outputTensor[4].toTensor().dataAsFloatArray
+                    val xInput = inputTensor.dataAsFloatArray
+                    Log.d("inputArray", "" + xInput.size)
+                    // Log.d("paraArray : ",""+paraArray.size)
+
+                    val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
+
+                    // bitmap으로 만들어서 반환
+
+
+                    // Create empty bitmap in ARGB format
+                    val bmp: Bitmap =
+                            width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                    val _pixels: IntArray = IntArray(width * height!! * 4)
+
+                    // mapping smallest value to 0 and largest value to 255
+                    val maxValue = dataAsFloatArray.max() ?: 1.0f
+                    val minValue = dataAsFloatArray.min() ?: -1.0f
+                    val delta = maxValue - minValue
+
+                    // Define if float min..max will be mapped to 0..255 or 255..0
+                    val conversion =
+                            { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
+
+                    // copy each value from float array to RGB channels
+                    if (width != null) {
+                        for (i in 0 until width * height) {
+                            val r = conversion(dataAsFloatArray[i])
+                            val g = conversion(dataAsFloatArray[i + width * height])
+                            val b = conversion(dataAsFloatArray[i + 2 * width * height])
+                            _pixels[i] =
+                                    Color.rgb(r, g, b) // you might need to import for rgb()
+                        }
+                    }
+                    if (width != null) {
+                        bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
+                        img = bmp
+                        publishProgress(bmp)
+                    }
+                } catch(e:Exception) {
+                    e.printStackTrace()
+                }
+                return img
+            }
+
+            override fun onProgressUpdate(vararg bmp: Bitmap?) {
+                binding.btnConvert.isVisible = false
+                binding.ivOutput.isVisible = true
+                binding.btnSave.isVisible = true
+                binding.viewRsl.isVisible = true
+                binding.ivOutput.setImageBitmap(bmp[0])
+            }
+
+            override fun onPostExecute(result: Bitmap?) {
+                loadingDialog.dismissDialog()
+            }
+
+            override fun onPreExecute() {
+                loadingDialog.startLoadingDialog()
+            }
+        }
 
         if (intent.hasExtra("filepath")) {
             Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
@@ -74,9 +180,7 @@ class ResultActivity : AppCompatActivity() {
         }
 
         binding.btnConvert.setOnClickListener {
-//            binding.ivProgress.isVisible = true
-//            Glide.with(this).load(R.drawable.loading).into(binding.ivProgress)
-
+/*
             val thread = Thread(
                     Runnable {
 
@@ -165,6 +269,10 @@ class ResultActivity : AppCompatActivity() {
                     }
             )
             thread.run()
+
+ */
+            var task = logic(this)
+            task.execute(bm)
         }
 
         binding.btnSave.setOnClickListener{
