@@ -13,10 +13,7 @@ import android.media.ExifInterface
 import android.media.Image
 import android.media.ImageReader
 import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
+import android.os.*
 import android.provider.MediaStore
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -28,7 +25,6 @@ import android.util.SparseIntArray
 import android.view.Surface
 import android.view.TextureView
 import android.view.View
-import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -41,7 +37,6 @@ import org.pytorch.Module
 import org.pytorch.Tensor
 import java.io.*
 import java.text.SimpleDateFormat
-import java.time.OffsetDateTime
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -59,6 +54,115 @@ class MainActivity : AppCompatActivity() {
     lateinit var convertfilepath : String
     lateinit var _bm : Bitmap
     lateinit var prebm : Bitmap
+
+
+    //추가
+    private var mTimerTask: TimerTask? = null
+
+    val timer = Timer()
+    val TT: TimerTask = object : TimerTask() {
+        override fun run() {
+
+            prebm = binding.texture.getBitmap()!!
+            val width = prebm.width
+            val height = prebm.height
+            val pixels = IntArray(prebm.height * prebm.width)
+            prebm.getPixels(pixels, 0, width, 0, 0, width, height)
+            prebm = blur(getApplicationContext(), prebm, 3)
+            prebm = Bitmap.createScaledBitmap(prebm, 240, 240, true)
+
+
+
+            //      val thread = Thread(
+            //             Runnable {
+
+            val begin = System.nanoTime()
+            try{
+
+                var x: Int = 0
+                var y: Int = 0
+                var width: Int = prebm!!.width
+                var height: Int = prebm!!.height
+
+                val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
+                if (prebm != null) {
+                    val pixelsCount = height * width
+                    val pixels = IntArray(pixelsCount)
+                    var outBufferOffset = 0
+                    prebm!!.getPixels(pixels, 0, width, x, y, width, height)
+                    val offset_b = 2 * pixelsCount
+                    for (i in 0 until pixelsCount) {
+                        val c = pixels[i]
+                        val r = (c shr 16 and 0xff) / 255.0f
+                        val g = (c shr 8 and 0xff) / 255.0f
+                        val b = (c and 0xff) / 255.0f
+                        floatBuffer.put(outBufferOffset + i, r)
+                        floatBuffer.put(outBufferOffset + pixelsCount + i, g)
+                        floatBuffer.put(outBufferOffset + offset_b + i, b)
+                    }
+                }
+                var inputTensor: Tensor = Tensor.fromBlob(
+                        floatBuffer,
+                        longArrayOf(1, 3, height.toLong(), width.toLong())
+                )
+
+
+                // outputTensor 생성 및 forward
+                var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
+
+                val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
+
+
+                // bitmap으로 만들어서 반환
+
+
+                // Create empty bitma`p in ARGB format
+                var bmp=width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                val _pixels: IntArray = IntArray(width * height!! * 4)
+
+                // mapping smallest value to 0 and largest value to 255
+                val maxValue = dataAsFloatArray.max() ?: 1.0f
+                val minValue = dataAsFloatArray.min() ?: -1.0f
+                val delta = maxValue - minValue
+
+                // Define if float min..max will be mapped to 0..255 or 255..0
+                val conversion =
+                        { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
+
+                // copy each value from float array to RGB channels
+                if (width != null) {
+                    for (i in 0 until width * height) {
+                        val r = conversion(dataAsFloatArray[i])
+                        val g = conversion(dataAsFloatArray[i + width * height])
+                        val b = conversion(dataAsFloatArray[i + 2 * width * height])
+                        _pixels[i] =
+                                Color.rgb(r, g, b) // you might need to import for rgb()
+                    }
+                }
+                if (width != null) {
+                    bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
+                }
+
+                runOnUiThread{
+
+                    binding.ivPre.setImageBitmap(bmp)
+                }
+                val end = System.nanoTime()
+                Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
+            }catch(e:Exception)
+            {
+                e.printStackTrace()
+            }
+            //                    }
+            //              )
+//                thread.run()
+
+            // 반복실행할 구문
+
+
+        }
+    }
+
 
 
     //카메라 프리뷰
@@ -193,7 +297,7 @@ class MainActivity : AppCompatActivity() {
                     characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         ?.getOutputSizes(ImageFormat.JPEG)
             }
-            var width = 1090
+            var width = 1080
             var height = 1080
             if (jpegSizes != null && 0 < jpegSizes.size) {
                 width = 1080//jpegSizes[0].width
@@ -480,6 +584,13 @@ class MainActivity : AppCompatActivity() {
         binding!!.btnTakepicture.setOnClickListener {
             takePicture()
 
+            //수정
+            if (mTimerTask != null)
+                mTimerTask!!.cancel()
+            //timer.cancel()
+            binding.ivPre.isVisible=false
+            //
+
             var num : Int=0
             while ((!(this::filepath.isInitialized))||filepath==null)
                 num=1
@@ -488,6 +599,7 @@ class MainActivity : AppCompatActivity() {
             val nextIntent = Intent(this, ResultActivity::class.java)
             nextIntent.putExtra("filepath", filepath)
 
+
             convertfilepath=filepath
             resetField(this, "filepath")
             Log.d("path3",(this::filepath.isInitialized).toString())
@@ -495,20 +607,28 @@ class MainActivity : AppCompatActivity() {
 
 
         }
+
         binding.ivPre.isVisible=false
 
         binding.btnPreview.setOnClickListener {
             if(binding.ivPre.getVisibility() == View.VISIBLE)
             {
+                if (mTimerTask != null)
+                    mTimerTask!!.cancel()
+
                 binding.ivPre.isVisible = false
                 binding.btnPreview.setText("On")
             }
             else
             {
+                mTimerTask = createTimerTask();
+                timer.schedule(mTimerTask, 300, 1000);
+
                 binding.ivPre.isVisible = true
                 binding.btnPreview.setText("Off")
             }
         }
+
 
         binding.btnGallery.setOnClickListener {
             // 사진 불러오는 함수 실행
@@ -517,11 +637,11 @@ class MainActivity : AppCompatActivity() {
                 Log.d("prebm",(prebm.width).toString())
         }
 
-        val timer = Timer()
+    }
 
-        val TT: TimerTask = object : TimerTask() {
+    fun createTimerTask() : TimerTask{
+        val timerTask: TimerTask = object : TimerTask()  {
             override fun run() {
-
                 prebm = binding.texture.getBitmap()!!
                 val width = prebm.width
                 val height = prebm.height
@@ -530,104 +650,91 @@ class MainActivity : AppCompatActivity() {
                 prebm = blur(getApplicationContext(), prebm, 3)
                 prebm = Bitmap.createScaledBitmap(prebm, 240, 240, true)
 
-                val thread = Thread(
-                        Runnable {
+                //      val thread = Thread(
+                //             Runnable {
 
-                            val begin = System.nanoTime()
-                            try{
+                val begin = System.nanoTime()
+                try{
 
-                                var x: Int = 0
-                                var y: Int = 0
-                                var width: Int = prebm!!.width
-                                var height: Int = prebm!!.height
-
-
-                                val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
-                                if (prebm != null) {
-                                    val pixelsCount = height * width
-                                    val pixels = IntArray(pixelsCount)
-                                    var outBufferOffset = 0
-                                    prebm!!.getPixels(pixels, 0, width, x, y, width, height)
-                                    val offset_b = 2 * pixelsCount
-                                    for (i in 0 until pixelsCount) {
-                                        val c = pixels[i]
-                                        val r = (c shr 16 and 0xff) / 255.0f
-                                        val g = (c shr 8 and 0xff) / 255.0f
-                                        val b = (c and 0xff) / 255.0f
-                                        floatBuffer.put(outBufferOffset + i, r)
-                                        floatBuffer.put(outBufferOffset + pixelsCount + i, g)
-                                        floatBuffer.put(outBufferOffset + offset_b + i, b)
-                                    }
-                                }
-                                var inputTensor: Tensor = Tensor.fromBlob(
-                                        floatBuffer,
-                                        longArrayOf(1, 3, height.toLong(), width.toLong())
-                                )
+                    var x: Int = 0
+                    var y: Int = 0
+                    var width: Int = prebm!!.width
+                    var height: Int = prebm!!.height
 
 
-                                // outputTensor 생성 및 forward
-                                var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
-
-                                val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
-
-
-                                // bitmap으로 만들어서 반환
-
-
-                                // Create empty bitmap in ARGB format
-                                var bmp=width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
-                                val _pixels: IntArray = IntArray(width * height!! * 4)
-
-                                // mapping smallest value to 0 and largest value to 255
-                                val maxValue = dataAsFloatArray.max() ?: 1.0f
-                                val minValue = dataAsFloatArray.min() ?: -1.0f
-                                val delta = maxValue - minValue
-
-                                // Define if float min..max will be mapped to 0..255 or 255..0
-                                val conversion =
-                                        { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
-
-                                // copy each value from float array to RGB channels
-                                if (width != null) {
-                                    for (i in 0 until width * height) {
-                                        val r = conversion(dataAsFloatArray[i])
-                                        val g = conversion(dataAsFloatArray[i + width * height])
-                                        val b = conversion(dataAsFloatArray[i + 2 * width * height])
-                                        _pixels[i] =
-                                                Color.rgb(r, g, b) // you might need to import for rgb()
-                                    }
-                                }
-                                if (width != null) {
-                                    bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
-                                }
-
-                                runOnUiThread{
-
-                                    binding.ivPre.setImageBitmap(bmp)
-                                }
-                                val end = System.nanoTime()
-                                Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
-                            }catch(e:Exception)
-                            {
-                                e.printStackTrace()
-                            }
+                    val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
+                    if (prebm != null) {
+                        val pixelsCount = height * width
+                        val pixels = IntArray(pixelsCount)
+                        var outBufferOffset = 0
+                        prebm!!.getPixels(pixels, 0, width, x, y, width, height)
+                        val offset_b = 2 * pixelsCount
+                        for (i in 0 until pixelsCount) {
+                            val c = pixels[i]
+                            val r = (c shr 16 and 0xff) / 255.0f
+                            val g = (c shr 8 and 0xff) / 255.0f
+                            val b = (c and 0xff) / 255.0f
+                            floatBuffer.put(outBufferOffset + i, r)
+                            floatBuffer.put(outBufferOffset + pixelsCount + i, g)
+                            floatBuffer.put(outBufferOffset + offset_b + i, b)
                         }
-                )
-                thread.run()
+                    }
+                    var inputTensor: Tensor = Tensor.fromBlob(
+                            floatBuffer,
+                            longArrayOf(1, 3, height.toLong(), width.toLong())
+                    )
 
-                // 반복실행할 구문
+
+                    // outputTensor 생성 및 forward
+                    var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
+
+                    val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
 
 
+                    // bitmap으로 만들어서 반환
+
+
+                    // Create empty bitmap in ARGB format
+                    var bmp=width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                    val _pixels: IntArray = IntArray(width * height!! * 4)
+
+                    // mapping smallest value to 0 and largest value to 255
+                    val maxValue = dataAsFloatArray.max() ?: 1.0f
+                    val minValue = dataAsFloatArray.min() ?: -1.0f
+                    val delta = maxValue - minValue
+
+                    // Define if float min..max will be mapped to 0..255 or 255..0
+                    val conversion =
+                            { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
+
+                    // copy each value from float array to RGB channels
+                    if (width != null) {
+                        for (i in 0 until width * height) {
+                            val r = conversion(dataAsFloatArray[i])
+                            val g = conversion(dataAsFloatArray[i + width * height])
+                            val b = conversion(dataAsFloatArray[i + 2 * width * height])
+                            _pixels[i] =
+                                    Color.rgb(r, g, b) // you might need to import for rgb()
+                        }
+                    }
+                    if (width != null) {
+                        bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
+                    }
+
+                    runOnUiThread{
+                        //binding.ivPre.isVisible = true
+                        binding.ivPre.setImageBitmap(bmp)
+                    }
+                    val end = System.nanoTime()
+                    Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
+                }catch(e:Exception)
+                {
+                    e.printStackTrace()
+                }
             }
         }
-
-
-
-        timer.schedule(TT, 500, 10) //Timer 실행
-
-
+        return timerTask;
     }
-
     fun resetField(target: Any, fieldName: String) {
         val field = target.javaClass.getDeclaredField(fieldName)
 
