@@ -49,7 +49,10 @@ class ResultActivity : AppCompatActivity() {
 
         binding.ivOutput.isVisible = false
         binding.btnSave.isVisible = false
-        binding.viewRsl.isVisible = false
+        binding.btnSave.isEnabled = false
+        binding.btnGallery2.isVisible = false
+        binding.btnGallery2.isEnabled = false
+        //binding.viewRsl.isVisible = false
 
         loadModel()
 
@@ -142,9 +145,13 @@ class ResultActivity : AppCompatActivity() {
 
             override fun onProgressUpdate(vararg bmp: Bitmap?) {
                 binding.btnConvert.isVisible = false
+                binding.btnConvert.isEnabled = false
                 binding.ivOutput.isVisible = true
+                binding.btnSave.isEnabled = true
                 binding.btnSave.isVisible = true
-                binding.viewRsl.isVisible = true
+                binding.btnGallery2.isEnabled = true
+                binding.btnGallery2.isVisible = true
+                //binding.viewRsl.isVisible = true
                 binding.ivOutput.setImageBitmap(bmp[0])
             }
 

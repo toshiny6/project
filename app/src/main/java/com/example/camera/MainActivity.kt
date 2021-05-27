@@ -622,7 +622,7 @@ class MainActivity : AppCompatActivity() {
             else
             {
                 mTimerTask = createTimerTask();
-                timer.schedule(mTimerTask, 300, 100);
+                timer.schedule(mTimerTask, 300, 500);
 
                 binding.ivPre.isVisible = true
                 //binding.btnPreview.setText("Off")

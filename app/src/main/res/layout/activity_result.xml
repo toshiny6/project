@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#A6A5A5"
+    android:background="#FFFFFF"
     tools:context=".ResultActivity">
 
 <!--    <ImageView-->
@@ -58,10 +58,10 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_gallery2"
-        android:layout_width="65dp"
+        android:layout_width="150dp"
         android:layout_height="70dp"
-        android:layout_marginStart="48dp"
-        android:backgroundTint="@color/white"
+        android:layout_marginStart="68dp"
+        android:backgroundTint="@color/btnColor"
 
         android:elevation="5dp"
         app:icon="@drawable/ic_photo_library_black_24dp"
@@ -74,7 +74,7 @@
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.96"
+        app:layout_constraintVertical_bias="0.854"
         app:rippleColor="@color/btnClick"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
         app:strokeColor="@color/black"
@@ -110,56 +110,49 @@
         app:srcCompat="@drawable/original"
         tools:visibility="invisible" />
 
-    <ImageView
-        android:id="@+id/view_org"
-        android:layout_width="320dp"
-        android:layout_height="42dp"
-        app:layout_constraintBottom_toTopOf="@+id/iv_input"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.56"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/ic_input" />
+<!--    <ImageView-->
+<!--        android:id="@+id/view_org"-->
+<!--        android:layout_width="320dp"-->
+<!--        android:layout_height="42dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/iv_input"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.56"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="1.0"-->
+<!--        app:srcCompat="@drawable/ic_input" />-->
 
-    <ImageView
-        android:id="@+id/view_rsl"
-        android:layout_width="320dp"
-        android:layout_height="42dp"
-        app:layout_constraintBottom_toTopOf="@+id/iv_output"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.527"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/ic_output" />
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="94dp"
-        android:layout_height="90dp"
-        android:foreground="@drawable/group_5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<!--    <ImageView-->
+<!--        android:id="@+id/view_rsl"-->
+<!--        android:layout_width="320dp"-->
+<!--        android:layout_height="42dp"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/iv_output"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.527"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintVertical_bias="1.0"-->
+<!--        app:srcCompat="@drawable/ic_output" />-->
 
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_convert"
-        android:layout_width="65dp"
+        android:layout_width="150dp"
         android:layout_height="70dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/btnColor"
         android:elevation="5dp"
 
         app:icon="@drawable/ic_change_circle_black_24dp"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="50dp"
-        app:iconTint="@android:color/darker_gray"
+        app:iconTint="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.779"
+        app:layout_constraintVertical_bias="0.854"
         app:rippleColor="@color/btnClick"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
         app:strokeColor="@color/black"
@@ -169,9 +162,9 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_save"
-        android:layout_width="65dp"
+        android:layout_width="155dp"
         android:layout_height="70dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/btnColor"
         android:elevation="5dp"
 
         app:icon="@drawable/ic_save_alt_black_24dp"
@@ -181,10 +174,10 @@
         app:iconTint="@android:color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.884"
+        app:layout_constraintHorizontal_bias="0.777"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.96"
+        app:layout_constraintVertical_bias="0.854"
         app:rippleColor="@color/btnClick"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent"
         app:strokeColor="@color/black"
