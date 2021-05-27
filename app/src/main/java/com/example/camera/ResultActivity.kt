@@ -403,6 +403,7 @@ class ResultActivity : AppCompatActivity() {
         // 실제적인 저장 처리
         val out =  FileOutputStream(folderPath + fileName)
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
+        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+folderPath+fileName)))
         // Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
 //        resizedpath=folderPath+fileName
     }
