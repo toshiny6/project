@@ -581,11 +581,11 @@ class MainActivity : AppCompatActivity() {
         //카메라 프리뷰
         binding!!.texture.surfaceTextureListener = textureListener
         binding!!.btnTakepicture.setOnClickListener {
-            takePicture()
 
-            //수정
             if (mTimerTask != null)
                 mTimerTask!!.cancel()
+            //수정
+            takePicture()
             //timer.cancel()
             binding.ivPre.isVisible=false
             //

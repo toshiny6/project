@@ -109,8 +109,7 @@ class ResultActivity : AppCompatActivity() {
 
 
                     // Create empty bitmap in ARGB format
-                    val bmp: Bitmap =
-                            width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
+                    bmp = width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
                     val _pixels: IntArray = IntArray(width * height!! * 4)
 
                     // mapping smallest value to 0 and largest value to 255
