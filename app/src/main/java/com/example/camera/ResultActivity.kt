@@ -1,12 +1,10 @@
 package com. example.camera
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
@@ -17,6 +15,8 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View.OnTouchListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -24,7 +24,10 @@ import com.example.camera.databinding.ActivityResultBinding
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.Tensor
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
@@ -271,14 +274,31 @@ class ResultActivity : AppCompatActivity() {
             thread.run()
 
  */
-            var task = logic(this)
-            task.execute(bm)
-        }
+                var task = logic(this)
+                task.execute(bm)
+            }
 
-        binding.btnSave.setOnClickListener{
-            savePhoto(bmp)
-            Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
-        }
+            binding.btnSave.setOnClickListener{
+                savePhoto(bmp)
+                Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
+            }
+
+        binding.ivOutput.setOnTouchListener(OnTouchListener { v, event ->
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    binding.ivInput.isVisible = true
+                    binding.ivOutput.isVisible=false
+                }
+                MotionEvent.ACTION_UP -> {
+                    binding.ivInput.isVisible = false
+                    binding.ivOutput.isVisible= true
+                }
+            }
+            false
+        })
+
+
     }
 
     private  fun goToAlbum() {

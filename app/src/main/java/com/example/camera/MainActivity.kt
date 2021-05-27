@@ -68,8 +68,8 @@ class MainActivity : AppCompatActivity() {
             val height = prebm.height
             val pixels = IntArray(prebm.height * prebm.width)
             prebm.getPixels(pixels, 0, width, 0, 0, width, height)
-            prebm = blur(getApplicationContext(), prebm, 3)
-            prebm = Bitmap.createScaledBitmap(prebm, 240, 240, true)
+            prebm = blur(getApplicationContext(), prebm, 4)
+            prebm = Bitmap.createScaledBitmap(prebm, 200, 200, true)
 
 
 
@@ -144,7 +144,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 runOnUiThread{
-
                     binding.ivPre.setImageBitmap(bmp)
                 }
                 val end = System.nanoTime()
@@ -617,15 +616,16 @@ class MainActivity : AppCompatActivity() {
                     mTimerTask!!.cancel()
 
                 binding.ivPre.isVisible = false
-                binding.btnPreview.setText("On")
+               //
+                // binding.btnPreview.setText("On")
             }
             else
             {
                 mTimerTask = createTimerTask();
-                timer.schedule(mTimerTask, 300, 1000);
+                timer.schedule(mTimerTask, 300, 100);
 
                 binding.ivPre.isVisible = true
-                binding.btnPreview.setText("Off")
+                //binding.btnPreview.setText("Off")
             }
         }
 
