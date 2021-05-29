@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="a">#8e8e8e</color>
-    <color name="btnColor">#A6A5A5</color>
-    <color name="btnClick">#C7C373</color>
+<!--    <color name="btnColor">#A6A5A5</color>-->
+    <color name="btnColor">#000000</color>
+    <color name="btnClick">#A6A5A5</color>
+<!--    <color name="btnClick">#C7C373</color>-->
 </resources>

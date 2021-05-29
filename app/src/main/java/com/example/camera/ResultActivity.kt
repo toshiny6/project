@@ -52,7 +52,6 @@ class ResultActivity : AppCompatActivity() {
         binding.btnSave.isEnabled = false
         binding.btnGallery2.isVisible = false
         binding.btnGallery2.isEnabled = false
-        //binding.viewRsl.isVisible = false
 
         loadModel()
 
@@ -95,18 +94,9 @@ class ResultActivity : AppCompatActivity() {
                             longArrayOf(1, 3, height.toLong(), width.toLong())
                     )
 
-
                     // outputTensor 생성 및 forward
                     var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
-                    // val paraArray = outputTensor[4].toTensor().dataAsFloatArray
-                    val xInput = inputTensor.dataAsFloatArray
-                    Log.d("inputArray", "" + xInput.size)
-                    // Log.d("paraArray : ",""+paraArray.size)
-
                     val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
-
-                    // bitmap으로 만들어서 반환
-
 
                     // Create empty bitmap in ARGB format
                     bmp = width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
@@ -150,7 +140,6 @@ class ResultActivity : AppCompatActivity() {
                 binding.btnSave.isVisible = true
                 binding.btnGallery2.isEnabled = true
                 binding.btnGallery2.isVisible = true
-                //binding.viewRsl.isVisible = true
                 binding.ivOutput.setImageBitmap(bmp[0])
             }
 
@@ -175,7 +164,6 @@ class ResultActivity : AppCompatActivity() {
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
             }
-
 
             binding.ivInput.setImageBitmap(bm)
         }
