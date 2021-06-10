@@ -861,7 +861,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadModel(){
         try{
-            mModule = Module.load(assetFilePath(this, "lowlight_model1.pt"))
+            mModule = Module.load(assetFilePath(this, "Bright_2_model.pt"))
             Log.d("Model", "Model Loaded Successfully")
         } catch (e: IOException){
             Log.e("UseModel", "Load Model Failed", e)

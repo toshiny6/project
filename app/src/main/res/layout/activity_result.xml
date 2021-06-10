@@ -37,7 +37,7 @@
     <ImageView
         android:id="@+id/iv_input"
         android:layout_width="0dp"
-        android:layout_height="342dp"
+        android:layout_height="400dp"
         android:layout_marginBottom="236dp"
         android:clickable="true"
         android:src="@drawable/ic_view"
@@ -50,7 +50,7 @@
     <ImageView
         android:id="@+id/iv_output"
         android:layout_width="0dp"
-        android:layout_height="342dp"
+        android:layout_height="400dp"
 
         android:layout_marginBottom="236dp"
         android:clickable="true"
