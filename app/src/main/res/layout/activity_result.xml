@@ -39,29 +39,31 @@
         android:layout_width="0dp"
         android:layout_height="400dp"
         android:layout_marginBottom="236dp"
-        android:clickable="true"
-        android:src="@drawable/ic_view"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/original" />
-
-    <ImageView
-        android:id="@+id/iv_output"
-        android:layout_width="0dp"
-        android:layout_height="400dp"
-
-        android:layout_marginBottom="236dp"
+        android:background="#000000"
         android:clickable="true"
         android:src="@drawable/ic_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/original"
-        tools:visibility="invisible" />
+        app:srcCompat="@drawable/black"
+        tools:srcCompat="@android:drawable/screen_background_dark" />
 
+
+    <ImageView
+        android:id="@+id/iv_output"
+        android:layout_width="245dp"
+        android:layout_height="186dp"
+
+        android:layout_marginBottom="336dp"
+        android:clickable="true"
+        android:src="@drawable/ic_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.409"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/black"
+        tools:visibility="invisible" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_convert"

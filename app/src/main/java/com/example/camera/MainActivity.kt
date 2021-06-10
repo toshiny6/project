@@ -48,7 +48,8 @@ class MainActivity : AppCompatActivity() {
     private var mBinding : ActivityMainBinding? = null
     private val binding get () = mBinding!!
     private var mModule: Module? = null
-
+    var checkpreview : Boolean = false
+    var checkphoto : Boolean = false
 
     lateinit var filepath : String
     lateinit var convertfilepath : String
@@ -390,7 +391,8 @@ class MainActivity : AppCompatActivity() {
                         output?.close()
                         filepath=folderPath+fileName
                         Log.d("path",filepath)
-                        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+filepath)))
+                        //사진 찍을때 미디어스캐닝 x
+                        //sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+filepath)))
                         }
 
 
@@ -587,25 +589,29 @@ class MainActivity : AppCompatActivity() {
             //수정
             takePicture()
             //timer.cancel()
-            binding.ivPre.isVisible=false
+
+            //////-binding.ivPre.isVisible=false
             //
 
             var num : Int=0
             while ((!(this::filepath.isInitialized))||filepath==null)
                 num=1
 
-            Log.d("path!",filepath)
-            val nextIntent = Intent(this, ResultActivity::class.java)
-            nextIntent.putExtra("filepath", filepath)
+        Log.d("path!",filepath)
+        val nextIntent = Intent(this, ResultActivity::class.java)
 
+        nextIntent.putExtra("filepath", filepath)
+        nextIntent.putExtra("preview",checkpreview)
+        checkphoto=false
+            nextIntent.putExtra("photo",checkphoto)
+        convertfilepath=filepath
+        resetField(this, "filepath")
+        checkpreview = false
 
-            convertfilepath=filepath
-            resetField(this, "filepath")
-            Log.d("path3",(this::filepath.isInitialized).toString())
-            startActivity(nextIntent)
+        startActivity(nextIntent)
 
-
-        }
+            binding.ivPre.isVisible=false
+    }
 
         binding.ivPre.isVisible=false
 
@@ -614,21 +620,19 @@ class MainActivity : AppCompatActivity() {
             {
                 if (mTimerTask != null)
                     mTimerTask!!.cancel()
-
+                checkpreview=false
                 binding.ivPre.isVisible = false
-               //
-                // binding.btnPreview.setText("On")
+
             }
             else
             {
+                checkpreview=true
                 mTimerTask = createTimerTask();
                 timer.schedule(mTimerTask, 300, 500);
 
                 binding.ivPre.isVisible = true
-                //binding.btnPreview.setText("Off")
             }
         }
-
 
         binding.btnGallery.setOnClickListener {
             // 사진 불러오는 함수 실행
@@ -839,8 +843,13 @@ class MainActivity : AppCompatActivity() {
             val bitmap : Bitmap
 
             getPathFromUri(uri)
+
             val nextIntent = Intent(this, ResultActivity::class.java)
+            checkpreview=true
             nextIntent.putExtra("filepath", filepath)
+            nextIntent.putExtra("preview",checkpreview)
+            checkphoto=true
+            nextIntent.putExtra("photo",checkphoto)
 
             // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
             var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))

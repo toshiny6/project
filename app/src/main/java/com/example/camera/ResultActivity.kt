@@ -1,5 +1,6 @@
 package com. example.camera
 
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -9,14 +10,13 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.renderscript.Allocation
 import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View.OnTouchListener
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -41,6 +41,8 @@ class ResultActivity : AppCompatActivity() {
     lateinit var bmp : Bitmap
     val REQUEST_GALLERY_IMAGE = 1 // 갤러리 이미지 불러오기
     val loadingDialog = LoadingDialog(this)
+    var checkpreview : Boolean = false
+    var checkphoto : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +50,11 @@ class ResultActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.ivOutput.isVisible = false
-        binding.btnSave.isVisible = false
-        binding.btnSave.isEnabled = false
-        binding.btnGallery2.isVisible = false
-        binding.btnGallery2.isEnabled = false
-
+        binding.btnSave.isEnabled = true
+        binding.btnSave.isVisible = true
+        binding.btnGallery2.isEnabled = true
+        binding.btnGallery2.isVisible = true
+        binding.btnConvert.isVisible=false
         loadModel()
 
         class logic(context: Context?) :
@@ -133,14 +135,14 @@ class ResultActivity : AppCompatActivity() {
             }
 
             override fun onProgressUpdate(vararg bmp: Bitmap?) {
-                binding.btnConvert.isVisible = false
+                //binding.btnConvert.isVisible = false
                 binding.btnConvert.isEnabled = false
-                binding.ivOutput.isVisible = true
+                //binding.ivOutput.isVisible = true
                 binding.btnSave.isEnabled = true
                 binding.btnSave.isVisible = true
                 binding.btnGallery2.isEnabled = true
                 binding.btnGallery2.isVisible = true
-                binding.ivOutput.setImageBitmap(bmp[0])
+                binding.ivInput.setImageBitmap(bmp[0])
             }
 
             override fun onPostExecute(result: Bitmap?) {
@@ -152,8 +154,10 @@ class ResultActivity : AppCompatActivity() {
             }
         }
 
+
+
         if (intent.hasExtra("filepath")) {
-            Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
+           // Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
             bm = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
 
             Log.d("intent", intent.getStringExtra("filepath").toString())
@@ -164,19 +168,46 @@ class ResultActivity : AppCompatActivity() {
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
             }
+            if (intent.hasExtra("preview"))
+            {
+            checkpreview = intent.getBooleanExtra("preview",true)
+            checkphoto = intent.getBooleanExtra("photo",false)
 
-            binding.ivInput.setImageBitmap(bm)
+            if (checkphoto) {
+                var task = logic(this)
+                task.execute(bm)
+            }
+            else {
+                if (checkpreview) {
+                    var task = logic(this)
+                    task.execute(bm)
+                    
+                } else {
+                    binding.ivInput.isVisible = true
+                    binding.ivInput.setImageBitmap(bm)
+                    bmp = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
+//                    val f: File = File(intent.getStringExtra("filepath"))
+//                    if (f.delete()) {
+//                        Log.i("delete", "file remove = " + f.name + ", 삭제 성공")
+//                    }
+
+                }
+            }
+            }
+
+            //binding.ivInput.setImageBitmap(bm)
         }
         else {
             Toast.makeText(this, "filepathError!", Toast.LENGTH_SHORT).show()
         }
+
 
         binding.btnGallery2.setOnClickListener {
             // 사진 불러오는 함수 실행
             goToAlbum()
         }
 
-        binding.btnConvert.setOnClickListener {
+        //binding.btnConvert.setOnClickListener {
 /*
             val thread = Thread(
                     Runnable {
@@ -266,36 +297,35 @@ class ResultActivity : AppCompatActivity() {
                     }
             )
             thread.run()
-
  */
-                var task = logic(this)
-                task.execute(bm)
-            }
+
+           // }
 
             binding.btnSave.setOnClickListener{
                 savePhoto(bmp)
                 Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
             }
 
-        binding.ivOutput.setOnTouchListener(OnTouchListener { v, event ->
-
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    binding.ivInput.isVisible = true
-                    binding.ivOutput.isVisible=false
-                }
-                MotionEvent.ACTION_UP -> {
-                    binding.ivInput.isVisible = false
-                    binding.ivOutput.isVisible= true
-                }
-            }
-            false
-        })
+//        binding.ivOutput.setOnTouchListener(OnTouchListener { v, event ->
+//
+//            when (event.action) {
+//                MotionEvent.ACTION_DOWN -> {
+//                    binding.ivInput.isVisible = true
+//                    binding.ivOutput.isVisible=false
+//                }
+//                MotionEvent.ACTION_UP -> {
+//                    binding.ivInput.isVisible = false
+//                    binding.ivOutput.isVisible= true
+//                }
+//            }
+//            false
+//        })
 
 
     }
 
     private  fun goToAlbum() {
+
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = MediaStore.Images.Media.CONTENT_TYPE
         startActivityForResult(intent, REQUEST_GALLERY_IMAGE)
@@ -356,6 +386,8 @@ class ResultActivity : AppCompatActivity() {
         }
     }
 
+
+
     //bitmap to uri
     private fun getImageUri(
         context: Context,
@@ -388,10 +420,27 @@ class ResultActivity : AppCompatActivity() {
             folder.mkdirs()
         }
 
+        checkpreview = intent.getBooleanExtra("preview",true)
+        checkphoto = intent.getBooleanExtra("photo",false)
+        // 앨범/프리뷰 확인
+        // 프리뷰 -> 인텐트 옮길때 받은 filepath에 저장하기
+        // 앨범 -> folderPath+ fileName에 저장하기
+        if(checkphoto)
+        {
+            val out =  FileOutputStream(folderPath + fileName)
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
+            sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+folderPath+fileName)))
+        }
+        else
+        {
+            val out =  FileOutputStream(intent.getStringExtra("filepath"))
+            bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
+            sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+intent.getStringExtra("filepath"))))
+        }
         // 실제적인 저장 처리
-        val out =  FileOutputStream(folderPath + fileName)
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
-        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+folderPath+fileName)))
+//        val out =  FileOutputStream(folderPath + fileName)
+//        bitmap.compress(Bitmap.CompressFormat.JPEG,100,out)
+//        sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+folderPath+fileName)))
         // Toast.makeText(this, "사진이 앨범에 저장되었습니다." , Toast.LENGTH_SHORT).show()
 //        resizedpath=folderPath+fileName
     }
