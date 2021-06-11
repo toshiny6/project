@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/new_gallery"
+        android:title="gallery"
+        android:icon="@drawable/ic_photo_library_black_24dp"
+        app:exb_color="#FF8888" />
+
+    <item
+        android:id="@+id/new_convert"
+        android:title="convert"
+        android:icon="@drawable/ic_change_circle_black_24dp"
+        app:exb_color="@color/btnClick" />
+
+    <item
+        android:id="@+id/new_save"
+        android:title="save"
+        android:icon="@drawable/ic_save_alt_black_24dp"
+        app:exb_color="#4169E1" />
+</menu>

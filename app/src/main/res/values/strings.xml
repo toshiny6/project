@@ -2,4 +2,8 @@
     <string name="app_name">Camera</string>
     <string name="web">Web</string>
     <string name="flutter">Flutter</string>
+    <string name="gallery">gallery</string>
+    <string name="convert">convert</string>
+    <string name="save">save</string>
+
 </resources>

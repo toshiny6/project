@@ -1,5 +1,6 @@
 package com. example.camera
 
+import android.content.ClipData
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -17,10 +18,17 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
+import android.view.View
+import android.view.ViewAnimationUtils
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.ColorUtils
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import com.example.camera.databinding.ActivityResultBinding
+import github.com.st235.lib_expandablebottombar.ExpandableBottomBar
+import github.com.st235.lib_expandablebottombar.MenuItemDescriptor
 import org.pytorch.IValue
 import org.pytorch.Module
 import org.pytorch.Tensor
@@ -49,12 +57,13 @@ class ResultActivity : AppCompatActivity() {
         mBinding = ActivityResultBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.ivInput.isVisible = false
         binding.ivOutput.isVisible = false
-        binding.btnSave.isEnabled = true
-        binding.btnSave.isVisible = true
-        binding.btnGallery2.isEnabled = true
-        binding.btnGallery2.isVisible = true
-        binding.btnConvert.isVisible=false
+        binding.expandableBottomBar.isVisible = false
+//        binding.btnSave.isEnabled = true
+//        binding.btnSave.isVisible = true
+//        binding.btnGallery2.isEnabled = true
+//        binding.btnGallery2.isVisible = true
         loadModel()
 
         class logic(context: Context?) :
@@ -136,12 +145,13 @@ class ResultActivity : AppCompatActivity() {
 
             override fun onProgressUpdate(vararg bmp: Bitmap?) {
                 //binding.btnConvert.isVisible = false
-                binding.btnConvert.isEnabled = false
                 //binding.ivOutput.isVisible = true
-                binding.btnSave.isEnabled = true
-                binding.btnSave.isVisible = true
-                binding.btnGallery2.isEnabled = true
-                binding.btnGallery2.isVisible = true
+//                binding.btnSave.isEnabled = true
+//                binding.btnSave.isVisible = true
+//                binding.btnGallery2.isEnabled = true
+//                binding.btnGallery2.isVisible = true
+                binding.ivInput.isVisible = true
+                binding.expandableBottomBar.isVisible = true
                 binding.ivInput.setImageBitmap(bmp[0])
             }
 
@@ -185,6 +195,7 @@ class ResultActivity : AppCompatActivity() {
                 } else {
                     binding.ivInput.isVisible = true
                     binding.ivInput.setImageBitmap(bm)
+                    binding.expandableBottomBar.isVisible = true
                     bmp = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
 //                    val f: File = File(intent.getStringExtra("filepath"))
 //                    if (f.delete()) {
@@ -195,131 +206,79 @@ class ResultActivity : AppCompatActivity() {
             }
             }
 
-            //binding.ivInput.setImageBitmap(bm)
         }
         else {
             Toast.makeText(this, "filepathError!", Toast.LENGTH_SHORT).show()
         }
 
+        val colorView: View = findViewById(R.id.color)
+        val bottomBar: ExpandableBottomBar = findViewById(R.id.expandable_bottom_bar)
 
-        binding.btnGallery2.setOnClickListener {
-            // 사진 불러오는 함수 실행
-            goToAlbum()
-        }
+        colorView.setBackgroundColor(ColorUtils.setAlphaComponent(Color.GRAY, 60))
 
-        //binding.btnConvert.setOnClickListener {
-/*
-            val thread = Thread(
-                    Runnable {
+        val menu = bottomBar.menu
 
-                        val begin = System.nanoTime()
-                        try{
-
-                            var x: Int = 0
-                            var y: Int = 0
-                            var width: Int = bm!!.width
-                            var height: Int = bm!!.height
-
-
-                            val floatBuffer = Tensor.allocateFloatBuffer(3 * width * height)
-                            if (bm != null) {
-                                val pixelsCount = height * width
-                                val pixels = IntArray(pixelsCount)
-                                var outBufferOffset = 0
-                                bm!!.getPixels(pixels, 0, width, x, y, width, height)
-                                val offset_b = 2 * pixelsCount
-                                for (i in 0 until pixelsCount) {
-                                    val c = pixels[i]
-                                    val r = (c shr 16 and 0xff) / 255.0f
-                                    val g = (c shr 8 and 0xff) / 255.0f
-                                    val b = (c and 0xff) / 255.0f
-                                    floatBuffer.put(outBufferOffset + i, r)
-                                    floatBuffer.put(outBufferOffset + pixelsCount + i, g)
-                                    floatBuffer.put(outBufferOffset + offset_b + i, b)
-                                }
-                            }
-                            var inputTensor: Tensor = Tensor.fromBlob(
-                                    floatBuffer,
-                                    longArrayOf(1, 3, height.toLong(), width.toLong())
-                            )
-
-
-                            // outputTensor 생성 및 forward
-                            var outputTensor = mModule!!.forward(IValue.from(inputTensor)).toTuple()
-
-                            val dataAsFloatArray = outputTensor[1].toTensor().dataAsFloatArray
-
-
-                            // bitmap으로 만들어서 반환
-
-
-                            // Create empty bitmap in ARGB format
-                            bmp=width?.let { Bitmap.createBitmap(it, height, Bitmap.Config.ARGB_8888) }
-                            val _pixels: IntArray = IntArray(width * height!! * 4)
-
-                            // mapping smallest value to 0 and largest value to 255
-                            val maxValue = dataAsFloatArray.max() ?: 1.0f
-                            val minValue = dataAsFloatArray.min() ?: -1.0f
-                            val delta = maxValue - minValue
-
-                            // Define if float min..max will be mapped to 0..255 or 255..0
-                            val conversion =
-                                    { v: Float -> ((v - minValue) / delta * 255.0f).roundToInt() }
-
-                            // copy each value from float array to RGB channels
-                            if (width != null) {
-                                for (i in 0 until width * height) {
-                                    val r = conversion(dataAsFloatArray[i])
-                                    val g = conversion(dataAsFloatArray[i + width * height])
-                                    val b = conversion(dataAsFloatArray[i + 2 * width * height])
-                                    _pixels[i] =
-                                            Color.rgb(r, g, b) // you might need to import for rgb()
-                                }
-                            }
-                            if (width != null) {
-                                bmp.setPixels(_pixels, 0, width, 0, 0, width, height)
-                            }
-
-                            runOnUiThread{
-
-                                binding.btnConvert.isVisible=false
-                                binding.ivOutput.isVisible = true
-                                binding.btnSave.isVisible = true
-                                binding.viewRsl.isVisible = true
-                                binding.ivOutput.setImageBitmap(bmp)
-                            }
-                            val end = System.nanoTime()
-                            Log.d("Elapsed time in nanoseconds: ", "${end-begin}")
-                        }catch(e:Exception)
-                        {
-                            e.printStackTrace()
-                        }
-                    }
+        menu.add(
+            MenuItemDescriptor.Builder(
+                this,
+                R.id.new_gallery,
+                R.drawable.ic_photo_library_black_24dp,
+                R.string.gallery, Color.MAGENTA
             )
-            thread.run()
- */
+                .build()
+        )
 
-           // }
+        menu.add(
+            MenuItemDescriptor.Builder(
+                this,
+                R.id.new_convert,
+                R.drawable.ic_change_circle_black_24dp,
+                R.string.convert, Color.GRAY
+            )
+                .build()
+        )
 
-            binding.btnSave.setOnClickListener{
+        menu.add(
+            MenuItemDescriptor.Builder(
+                this,
+                R.id.new_save,
+                R.drawable.ic_save_alt_black_24dp,
+                R.string.save,
+                Color.parseColor("#58a5f0")
+            )
+                .build()
+        )
+
+        bottomBar.onItemSelectedListener = { v, i, _ ->
+            if(i.text == "gallery"){
+                goToAlbum()
+            }
+            else if(i.text == "save"){
                 savePhoto(bmp)
                 Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
             }
 
-//        binding.ivOutput.setOnTouchListener(OnTouchListener { v, event ->
+        }
+
+        bottomBar.onItemReselectedListener = { _, i, _ ->
+            if(i.text == "gallery"){
+                goToAlbum()
+            }
+            else if(i.text == "save"){
+                savePhoto(bmp)
+                Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
+            }
+        }
+
+//        binding.btnGallery2.setOnClickListener {
+//            // 사진 불러오는 함수 실행
+//            goToAlbum()
+//        }
 //
-//            when (event.action) {
-//                MotionEvent.ACTION_DOWN -> {
-//                    binding.ivInput.isVisible = true
-//                    binding.ivOutput.isVisible=false
-//                }
-//                MotionEvent.ACTION_UP -> {
-//                    binding.ivInput.isVisible = false
-//                    binding.ivOutput.isVisible= true
-//                }
+//            binding.btnSave.setOnClickListener{
+//                savePhoto(bmp)
+//                Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
 //            }
-//            false
-//        })
 
 
     }
@@ -331,29 +290,6 @@ class ResultActivity : AppCompatActivity() {
         startActivityForResult(intent, REQUEST_GALLERY_IMAGE)
     }
 
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        //startActivityForResult를 통해서 기본 카메라 앱으로부터 받아온 사진 결과 값
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        if(requestCode == REQUEST_GALLERY_IMAGE && resultCode == Activity.RESULT_OK)
-//        {
-//            var uri: Uri? = data?.data
-//
-//            try {
-//                bm = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-//            } catch (e: FileNotFoundException) {
-//                e.printStackTrace();
-//            }
-//
-//            if(bm!!.width !=720 || bm!!.height != 720) {
-//                var blurRadius: Int = 1 //.toFloat()
-//                bm = blur(getApplicationContext(), bm!!, blurRadius)
-//                bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
-//            }
-//
-//            binding.ivInput.setImageBitmap(bm)
-//        }
-//    }
 
     private fun loadModel(){
         try{

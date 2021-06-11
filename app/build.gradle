@@ -61,5 +61,8 @@ dependencies {
 
     //UI
     implementation 'com.fridayof1995.tabanimation:SnapTablayout:0.0.7'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
+    implementation 'com.github.st235:expandablebottombar:1.4.0'
 
 }
