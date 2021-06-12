@@ -226,9 +226,9 @@ class ResultActivity : AppCompatActivity() {
         menu.add(
             MenuItemDescriptor.Builder(
                 this,
-                R.id.new_convert,
-                R.drawable.ic_change_circle_black_24dp,
-                R.string.convert, Color.GRAY
+                R.id.new_detail,
+                R.drawable.ic_info_black_24dp,
+                R.string.detail, Color.YELLOW
             )
                 .build()
         )
