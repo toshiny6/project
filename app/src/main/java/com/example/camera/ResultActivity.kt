@@ -170,11 +170,11 @@ class ResultActivity : AppCompatActivity() {
 
             Log.d("intent", intent.getStringExtra("filepath").toString())
 
-            if(bm!!.width !=720 || bm!!.height != 720) {
+            if(bm!!.width !=1080 || bm!!.height != 1080) {
                 //블러 강도 결정
                 var blurRadius: Int = 1 //.toFloat()
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
-                bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
+                bm = Bitmap.createScaledBitmap(bm!!, 1080, 1080, true)
             }
             origianlBrightness = calculateBrightness(bm!!)
             if (intent.hasExtra("preview"))
@@ -196,10 +196,6 @@ class ResultActivity : AppCompatActivity() {
                     binding.ivInput.setImageBitmap(bm)
                     binding.expandableBottomBar.isVisible = true
                     bmp = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
-//                    val f: File = File(intent.getStringExtra("filepath"))
-//                    if (f.delete()) {
-//                        Log.i("delete", "file remove = " + f.name + ", 삭제 성공")
-//                    }
 
                 }
             }
@@ -286,9 +282,24 @@ class ResultActivity : AppCompatActivity() {
     }
 
     fun show() {
+
+
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Details")
-        builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nOriginal Brightness : "+ origianlBrightness.toString()+"\nBrightness : "+ calculateBrightness(bmp).toString())
+
+        if (checkphoto) {
+            builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nOriginal Brightness : "+ origianlBrightness.toString()+"\nBrightness : "+ calculateBrightness(bmp).toString())
+        }
+        else {
+            if (checkpreview) {
+                builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nOriginal Brightness : "+ origianlBrightness.toString()+"\nBrightness : "+ calculateBrightness(bmp).toString())
+
+            } else {
+                builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nBrightness : "+ calculateBrightness(bmp).toString())
+
+            }
+        }
+
         builder.setPositiveButton("확인",
                 object : DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
