@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var _bm : Bitmap
     lateinit var prebm : Bitmap
 
+    var resol : Int = 720
 
     //추가
     private var mTimerTask: TimerTask? = null
@@ -71,7 +72,6 @@ class MainActivity : AppCompatActivity() {
             prebm.getPixels(pixels, 0, width, 0, 0, width, height)
             prebm = blur(getApplicationContext(), prebm, 4)
             prebm = Bitmap.createScaledBitmap(prebm, 200, 200, true)
-
 
 
             //      val thread = Thread(
@@ -162,7 +162,6 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
 
 
     //카메라 프리뷰
@@ -297,11 +296,11 @@ class MainActivity : AppCompatActivity() {
                     characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
                         ?.getOutputSizes(ImageFormat.JPEG)
             }
-            var width = 1080
-            var height = 1080
+            var width = resol
+            var height = resol
             if (jpegSizes != null && 0 < jpegSizes.size) {
-                width = 1080//jpegSizes[0].width
-                height = 1080//jpegSizes[0].height
+                width = resol//jpegSizes[0].width
+                height = resol//jpegSizes[0].height
             }
             val reader =
                 ImageReader.newInstance(width, height, ImageFormat.JPEG, 1)
@@ -379,7 +378,7 @@ class MainActivity : AppCompatActivity() {
                         var bitmap: Bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size, options)
                         var matrix = Matrix()
                         matrix.postRotate(90f);
-                        bitmap =  Bitmap.createBitmap(bitmap, 0, 0, 1080, 1080, matrix, true);
+                        bitmap =  Bitmap.createBitmap(bitmap, 0, 0, resol, resol, matrix, true);
                         val stream = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
                         val currentData: ByteArray = stream.toByteArray()
@@ -604,6 +603,8 @@ class MainActivity : AppCompatActivity() {
         nextIntent.putExtra("preview",checkpreview)
         checkphoto=false
             nextIntent.putExtra("photo",checkphoto)
+            nextIntent.putExtra("resol",resol)
+
         convertfilepath=filepath
         resetField(this, "filepath")
         checkpreview = false
@@ -612,6 +613,8 @@ class MainActivity : AppCompatActivity() {
 
             binding.ivPre.isVisible=false
     }
+
+
 
         binding.ivPre.isVisible=false
 
@@ -640,6 +643,17 @@ class MainActivity : AppCompatActivity() {
             if (this::prebm.isInitialized)
                 Log.d("prebm",(prebm.width).toString())
         }
+
+        binding.button2.setOnClickListener {
+            resol =1080
+        }
+        binding.button3.setOnClickListener {
+            resol =720
+        }
+        binding.button4.setOnClickListener {
+            resol =960
+        }
+
 
     }
 
@@ -850,6 +864,7 @@ class MainActivity : AppCompatActivity() {
             nextIntent.putExtra("preview",checkpreview)
             checkphoto=true
             nextIntent.putExtra("photo",checkphoto)
+            nextIntent.putExtra("resol",resol)
 
             // 실행 결과를 저장하여 path 반환 받으면 nextIntent에 넣어서 결과 화면으로 전송
             var bm: Bitmap = BitmapFactory.decodeFile(nextIntent.getStringExtra("filepath"))

@@ -167,14 +167,15 @@ class ResultActivity : AppCompatActivity() {
         if (intent.hasExtra("filepath")) {
            // Toast.makeText(this, intent.getStringExtra("filepath") ,Toast.LENGTH_SHORT).show()
             bm = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
-
+            var resol : Int = 720
             Log.d("intent", intent.getStringExtra("filepath").toString())
-
-            if(bm!!.width !=1080 || bm!!.height != 1080) {
+            if (intent.hasExtra("resol"))
+                    resol  = intent.getIntExtra("resol",720)
+            if(bm!!.width !=resol || bm!!.height != resol) {
                 //블러 강도 결정
                 var blurRadius: Int = 1 //.toFloat()
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
-                bm = Bitmap.createScaledBitmap(bm!!, 1080, 1080, true)
+                bm = Bitmap.createScaledBitmap(bm!!, resol, resol, true)
             }
             origianlBrightness = calculateBrightness(bm!!)
             if (intent.hasExtra("preview"))
@@ -252,7 +253,7 @@ class ResultActivity : AppCompatActivity() {
                 savePhoto(bmp)
                 Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
             }
-            else if(i.text=="convert"){
+            else if(i.text=="details"){
                 show()
             }
 
@@ -265,6 +266,9 @@ class ResultActivity : AppCompatActivity() {
             else if(i.text == "save"){
                 savePhoto(bmp)
                 Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
+            }
+            else if(i.text=="details"){
+                show()
             }
         }
 
