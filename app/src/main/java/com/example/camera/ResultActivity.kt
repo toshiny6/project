@@ -48,6 +48,8 @@ class ResultActivity : AppCompatActivity() {
     var checkpreview : Boolean = false
     var checkphoto : Boolean = false
 
+    var origianlBrightness : Int =0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = ActivityResultBinding.inflate(layoutInflater)
@@ -174,6 +176,7 @@ class ResultActivity : AppCompatActivity() {
                 bm = blur(getApplicationContext(), bm!!, blurRadius)
                 bm = Bitmap.createScaledBitmap(bm!!, 720, 720, true)
             }
+            origianlBrightness = calculateBrightness(bm!!)
             if (intent.hasExtra("preview"))
             {
             checkpreview = intent.getBooleanExtra("preview",true)
@@ -285,7 +288,7 @@ class ResultActivity : AppCompatActivity() {
     fun show() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("Details")
-        builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nBrightness : "+ calculateBrightness(bmp).toString())
+        builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nOriginal Brightness : "+ origianlBrightness.toString()+"\nBrightness : "+ calculateBrightness(bmp).toString())
         builder.setPositiveButton("확인",
                 object : DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
