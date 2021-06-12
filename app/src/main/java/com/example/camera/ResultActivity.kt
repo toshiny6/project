@@ -1,8 +1,8 @@
 package com. example.camera
 
-import android.content.ClipData
-import android.content.ContentUris
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -19,12 +18,9 @@ import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
 import android.view.View
-import android.view.ViewAnimationUtils
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
-import androidx.core.view.get
 import androidx.core.view.isVisible
 import com.example.camera.databinding.ActivityResultBinding
 import github.com.st235.lib_expandablebottombar.ExpandableBottomBar
@@ -257,6 +253,9 @@ class ResultActivity : AppCompatActivity() {
                 savePhoto(bmp)
                 Toast.makeText(this,"Saved!",Toast.LENGTH_SHORT).show()
             }
+            else if(i.text=="convert"){
+                show()
+            }
 
         }
 
@@ -281,6 +280,50 @@ class ResultActivity : AppCompatActivity() {
 //            }
 
 
+    }
+
+    fun show() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Details")
+        builder.setMessage("Filepath : " + intent.getStringExtra("filepath").toString() + "\nResolution : " + bmp.height.toString() + "x" + bmp.width.toString()  + "\nBrightness : "+ calculateBrightness(bmp).toString())
+        builder.setPositiveButton("확인",
+                object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                       // Toast.makeText(applicationContext, "예를 선택했습니다.", Toast.LENGTH_LONG).show()
+                    }
+                })
+       // builder.setNegativeButton("아니오",
+       //         object : DialogInterface.OnClickListener {
+       //             override fun onClick(dialog: DialogInterface?, which: Int) {
+       //                 Toast.makeText(applicationContext, "아니오를 선택했습니다.", Toast.LENGTH_LONG).show()
+        //            }
+        //        })
+        builder.show()
+    }
+
+    fun calculateBrightnessEstimate(bitmap: Bitmap, pixelSpacing: Int): Int {
+        var R = 0
+        var G = 0
+        var B = 0
+        val height = bitmap.height
+        val width = bitmap.width
+        var n = 0
+        val pixels = IntArray(width * height)
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+        var i = 0
+        while (i < pixels.size) {
+            val color = pixels[i]
+            R += Color.red(color)
+            G += Color.green(color)
+            B += Color.blue(color)
+            n++
+            i += pixelSpacing
+        }
+        return (R + B + G) / (n * 3)
+    }
+
+    fun calculateBrightness(bitmap: Bitmap): Int {
+        return calculateBrightnessEstimate(bitmap, 1)
     }
 
     private  fun goToAlbum() {
