@@ -579,6 +579,7 @@ class MainActivity : AppCompatActivity() {
 
         loadModel()
 
+
         //카메라 프리뷰
         binding!!.texture.surfaceTextureListener = textureListener
         binding!!.btnTakepicture.setOnClickListener {
@@ -644,13 +645,13 @@ class MainActivity : AppCompatActivity() {
                 Log.d("prebm",(prebm.width).toString())
         }
 
-        binding.button2.setOnClickListener {
+        binding.re1080.setOnClickListener {
             resol =1080
         }
-        binding.button3.setOnClickListener {
+        binding.re720.setOnClickListener {
             resol =720
         }
-        binding.button4.setOnClickListener {
+        binding.re960.setOnClickListener {
             resol =960
         }
 
