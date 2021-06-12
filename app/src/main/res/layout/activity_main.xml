@@ -34,7 +34,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="60dp"
         android:alpha="0.5"
-        android:background="@drawable/ellipse_1"
+        android:background="@drawable/ic_circle_black_24dp"
         android:backgroundTint="@null"
         android:insetTop="0dp"
         android:insetBottom="0dp"
@@ -66,6 +66,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.909"
         app:rippleColor="@color/btnClick"
+        style="?android:attr/borderlessButtonStyle"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent">
 
     </com.google.android.material.button.MaterialButton>
@@ -167,6 +168,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.564"
         app:rippleColor="@color/btnClick"
+        style="?android:attr/borderlessButtonStyle"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent">
 
     </com.google.android.material.button.MaterialButton>
