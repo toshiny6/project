@@ -11,5 +11,8 @@
 <!--    <color name="btnColor">#A6A5A5</color>-->
     <color name="btnColor">#000000</color>
     <color name="btnClick">#A6A5A5</color>
+    <color name="btnOff">#808080</color>
+    <color name="btnOn">#A6A5A5</color>
+
 <!--    <color name="btnClick">#C7C373</color>-->
 </resources>

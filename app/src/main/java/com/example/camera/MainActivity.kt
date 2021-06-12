@@ -1,6 +1,7 @@
 package com.example.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
@@ -572,6 +573,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         
         super.onCreate(savedInstanceState)
@@ -619,6 +621,14 @@ class MainActivity : AppCompatActivity() {
             binding.ivPre.isVisible=false
     }
 
+//        binding.btnChange.setOnClickListener{
+//            if(binding.btnChange.isSelected){
+//                binding.btnChange.setText("OFF")
+//            }
+//            else{
+//                binding.btnChange.setText("ON")
+//            }
+//        }
 
 
         binding.ivPre.isVisible=false
@@ -630,14 +640,12 @@ class MainActivity : AppCompatActivity() {
                     mTimerTask!!.cancel()
                 checkpreview=false
                 binding.ivPre.isVisible = false
-
             }
             else
             {
                 checkpreview=true
                 mTimerTask = createTimerTask();
                 timer.schedule(mTimerTask, 300, 500);
-
                 binding.ivPre.isVisible = true
             }
         }
@@ -658,7 +666,7 @@ class MainActivity : AppCompatActivity() {
         binding.re960.setOnClickListener {
             resol =960
         }
-        binding.button.setOnClickListener {
+        binding.btnChange.setOnClickListener {
             cameraid=!cameraid
             if (binding!!.texture.isAvailable)
                 closeCamera()

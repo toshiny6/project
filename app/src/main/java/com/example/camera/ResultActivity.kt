@@ -219,7 +219,7 @@ class ResultActivity : AppCompatActivity() {
                 this,
                 R.id.new_gallery,
                 R.drawable.ic_photo_library_black_24dp,
-                R.string.gallery, Color.MAGENTA
+                R.string.gallery, Color.parseColor("#9370DB")
             )
                 .build()
         )

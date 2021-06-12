@@ -58,7 +58,7 @@
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="50dp"
-        app:iconTint="@android:color/black"
+        app:iconTint="#9370DB"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_takepicture"
         app:layout_constraintHorizontal_bias="0.436"
@@ -150,24 +150,22 @@
         app:srcCompat="@drawable/rectangle_1" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_preview"
+        android:id="@+id/btn_change"
         android:layout_width="65dp"
         android:layout_height="70dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:backgroundTint="@color/white"
         android:elevation="5dp"
         app:icon="@drawable/ic_change_circle_black_24dp"
         app:iconGravity="textStart"
         app:iconPadding="0dp"
         app:iconSize="50dp"
-        app:iconTint="@android:color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:iconTint="#9370DB"
+        app:layout_constraintBottom_toTopOf="@+id/texture"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.576"
-        app:layout_constraintStart_toEndOf="@+id/btn_takepicture"
+        app:layout_constraintHorizontal_bias="0.918"
+        app:layout_constraintStart_toStartOf="@+id/iv_picture"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.909"
+        app:layout_constraintVertical_bias="0.564"
         app:rippleColor="@color/btnClick"
         app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent">
 
@@ -217,13 +215,21 @@
             tools:layout_editor_absoluteY="13dp" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        tools:layout_editor_absoluteX="277dp"
-        tools:layout_editor_absoluteY="19dp" />
+    <ToggleButton
+        android:id="@+id/btn_preview"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:checked="false"
+        android:text="ON"
+        android:textOff="ON"
+        android:textOn="OFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toEndOf="@+id/btn_takepicture"
+        app:layout_constraintTop_toTopOf="@+id/rectangle_"
+        app:layout_constraintVertical_bias="0.908" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
