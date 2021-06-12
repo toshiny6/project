@@ -217,6 +217,14 @@
             tools:layout_editor_absoluteY="13dp" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="277dp"
+        tools:layout_editor_absoluteY="19dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

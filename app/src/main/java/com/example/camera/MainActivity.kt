@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var prebm : Bitmap
 
     var resol : Int = 720
-
+    var cameraid : Boolean = true
     //추가
     private var mTimerTask: TimerTask? = null
 
@@ -475,6 +475,10 @@ class MainActivity : AppCompatActivity() {
         Log.e(TAG, "is camera open")
         try {
             var cameraId = manager.cameraIdList[0]
+            if (cameraid==true)
+                cameraId = manager.cameraIdList[0]
+            else
+                cameraId = manager.cameraIdList[1]
             val characteristics = manager.getCameraCharacteristics(cameraId)
             val map =
                 characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)!!
@@ -654,7 +658,13 @@ class MainActivity : AppCompatActivity() {
         binding.re960.setOnClickListener {
             resol =960
         }
+        binding.button.setOnClickListener {
+            cameraid=!cameraid
+            if (binding!!.texture.isAvailable)
+                closeCamera()
+            openCamera()
 
+        }
 
     }
 
