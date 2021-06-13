@@ -185,9 +185,9 @@ class ResultActivity : AppCompatActivity() {
             checkphoto = intent.getBooleanExtra("photo",false)
 
             if (checkphoto) {
-                var matrix = Matrix()
-                matrix.postRotate(90f);
-                bm =  Bitmap.createBitmap(bm!!, 0, 0, resol, resol, matrix, true);
+               // var matrix = Matrix()
+               // matrix.postRotate(90f);
+              //  bm =  Bitmap.createBitmap(bm!!, 0, 0, resol, resol, matrix, true);
                 var task = logic(this)
                 task.execute(bm)
             }
