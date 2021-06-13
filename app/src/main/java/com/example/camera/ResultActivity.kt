@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Matrix
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
@@ -184,6 +185,9 @@ class ResultActivity : AppCompatActivity() {
             checkphoto = intent.getBooleanExtra("photo",false)
 
             if (checkphoto) {
+                var matrix = Matrix()
+                matrix.postRotate(90f);
+                bm =  Bitmap.createBitmap(bm!!, 0, 0, resol, resol, matrix, true);
                 var task = logic(this)
                 task.execute(bm)
             }
