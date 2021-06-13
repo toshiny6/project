@@ -18,6 +18,7 @@ import android.renderscript.Element
 import android.renderscript.RenderScript
 import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -275,6 +276,23 @@ class ResultActivity : AppCompatActivity() {
                 show()
             }
         }
+
+        binding.ivInput.setOnTouchListener(View.OnTouchListener { v, event ->
+
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    bm = BitmapFactory.decodeFile(intent.getStringExtra("filepath"))
+                    binding.ivOutput.setImageBitmap(bm)
+                    binding.ivInput.isVisible = false
+                    binding.ivOutput.isVisible = true
+                }
+                MotionEvent.ACTION_UP -> {
+                    binding.ivInput.isVisible = true
+                    binding.ivOutput.isVisible = false
+                }
+            }
+            false
+        })
 
 //        binding.btnGallery2.setOnClickListener {
 //            // 사진 불러오는 함수 실행

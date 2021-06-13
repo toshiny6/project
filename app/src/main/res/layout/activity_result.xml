@@ -24,17 +24,15 @@
         app:srcCompat="@drawable/black"
         tools:srcCompat="@android:drawable/screen_background_dark" />
 
-
     <ImageView
         android:id="@+id/iv_output"
-        android:layout_width="245dp"
-        android:layout_height="186dp"
-        android:layout_marginBottom="336dp"
+        android:layout_width="0dp"
+        android:layout_height="400dp"
+        android:layout_marginBottom="236dp"
         android:clickable="true"
         android:src="@drawable/ic_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.409"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/black"
         tools:visibility="invisible" />
@@ -51,15 +49,15 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="136dp"
         android:backgroundTint="#C0C0C0"
+        android:translationY="-70dp"
         app:exb_backgroundCornerRadius="25dp"
-        app:exb_itemInactiveColor="#fff"
 
+        app:exb_itemInactiveColor="#fff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_input" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
