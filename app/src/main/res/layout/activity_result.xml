@@ -8,31 +8,6 @@
     android:background="#FFFFFF"
     tools:context=".ResultActivity">
 
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:id="@+id/btn_gallery2"-->
-<!--        android:layout_width="80dp"-->
-<!--        android:layout_height="70dp"-->
-<!--        android:layout_marginStart="112dp"-->
-<!--        android:backgroundTint="@color/btnColor"-->
-
-<!--        android:elevation="5dp"-->
-<!--        app:icon="@drawable/ic_photo_library_black_24dp"-->
-<!--        app:iconGravity="textStart"-->
-<!--        app:iconPadding="0dp"-->
-<!--        app:iconSize="50dp"-->
-<!--        app:iconTint="@android:color/white"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toStartOf="@+id/btn_takepicture"-->
-<!--        app:layout_constraintHorizontal_bias="0.504"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.854"-->
-<!--        app:rippleColor="@color/btnClick"-->
-<!--        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent">-->
-<!--        &lt;!&ndash;        app:strokeColor="@color/black"&ndash;&gt;-->
-<!--        &lt;!&ndash;        app:strokeWidth="3dp">&ndash;&gt;-->
-
-<!--    </com.google.android.material.button.MaterialButton>-->
 
     <ImageView
         android:id="@+id/iv_input"
@@ -54,7 +29,6 @@
         android:id="@+id/iv_output"
         android:layout_width="245dp"
         android:layout_height="186dp"
-
         android:layout_marginBottom="336dp"
         android:clickable="true"
         android:src="@drawable/ic_view"
@@ -64,31 +38,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/black"
         tools:visibility="invisible" />
-
-<!--    <com.google.android.material.button.MaterialButton-->
-<!--        android:id="@+id/btn_save"-->
-<!--        android:layout_width="80dp"-->
-<!--        android:layout_height="70dp"-->
-<!--        android:backgroundTint="@color/btnColor"-->
-<!--        android:elevation="5dp"-->
-
-<!--        app:icon="@drawable/ic_save_alt_black_24dp"-->
-<!--        app:iconGravity="textStart"-->
-<!--        app:iconPadding="0dp"-->
-<!--        app:iconSize="50dp"-->
-<!--        app:iconTint="@android:color/white"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.661"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintVertical_bias="0.854"-->
-<!--        app:rippleColor="@color/btnClick"-->
-<!--        app:shapeAppearance="@style/ShapeAppearance.MaterialComponents.MediumComponent">-->
-<!--        &lt;!&ndash;        app:strokeColor="@color/black"&ndash;&gt;-->
-<!--        &lt;!&ndash;        app:strokeWidth="3dp">&ndash;&gt;-->
-
-<!--    </com.google.android.material.button.MaterialButton>-->
 
     <View
         android:id="@+id/color"
